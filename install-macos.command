@@ -1,9 +1,9 @@
 #!/bin/bash
-# Sage 一键安装 (macOS) — 双击此文件运行
+# Kexvim 一键安装 (macOS) — 双击此文件运行
 
 clear
 echo "===================================="
-echo "   Sage 一键安装 (macOS)"
+echo "   Kexvim 一键安装 (macOS)"
 echo "===================================="
 echo
 
@@ -105,15 +105,15 @@ fi
 
 echo ""
 echo "═══════════════════════════════════════════════"
-echo "  ✅ Sage 安装完成！"
+echo "  ✅ Kexvim 安装完成！"
 echo ""
 echo "  前台启动: cd ~/.sage && npm start"
-echo "  TUI:      直接在终端打字和 Sage 对话"
+echo "  TUI:      直接在终端打字和 Kexvim 对话"
 echo "  后台管理: launchctl start/stop com.sage.app"
 echo "═══════════════════════════════════════════════"
 echo ""
 
-read -p "是否立即启动 Sage？（y/N）: " START_NOW
+read -p "是否立即启动 Kexvim？（y/N）: " START_NOW
 if [ "$START_NOW" = "y" ] || [ "$START_NOW" = "Y" ]; then
     cd "$SAGE_DIR" && npm start
 fi

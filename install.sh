@@ -1,5 +1,5 @@
 #!/bin/bash
-# Sage 一键安装脚本 (Linux/macOS)
+# Kexvim 一键安装脚本 (Linux/macOS)
 # 从公开 Release 仓浅克隆，无 zip 文件
 # 用法: bash <(curl -s https://gitee.com/moscowzk/sage/raw/main/install.sh)
 
@@ -14,7 +14,7 @@ OS="linux"
 
 echo ""
 echo "╔══════════════════════════════════════╗"
-echo "║      Sage 安装程序 ($OS)           ║"
+echo "║      Kexvim 安装程序 ($OS)           ║"
 echo "╚══════════════════════════════════════╝"
 echo ""
 
@@ -45,7 +45,7 @@ fi
 
 # 2. 克隆
 echo ""
-echo ">> 第 1 步：下载 Sage"
+echo ">> 第 1 步：下载 Kexvim"
 rm -rf "$SAGE_DIR"
 git clone --depth 1 "$REPO" "$SAGE_DIR"
 echo "✅ 下载完成"
@@ -74,7 +74,7 @@ if [ "$OS" = "linux" ] && command -v systemctl &>/dev/null; then
     mkdir -p "$SYSTEMD_DIR"
     cat > "$SYSTEMD_DIR/sage.service" << EOF
 [Unit]
-Description=Sage AI Assistant
+Description=Kexvim AI Assistant
 After=network-online.target
 
 [Service]
@@ -122,13 +122,13 @@ fi
 
 echo ""
 echo "═══════════════════════════════════════════════"
-echo "  ✅ Sage 安装完成！"
+echo "  ✅ Kexvim 安装完成！"
 echo ""
 echo "  启动:     cd ~/.sage && npm start"
 echo "═══════════════════════════════════════════════"
 echo ""
 
-read -r -p "是否立即启动 Sage？（y/N）: " START_NOW
+read -r -p "是否立即启动 Kexvim？（y/N）: " START_NOW
 if [ "$START_NOW" = "y" ] || [ "$START_NOW" = "Y" ]; then
     cd "$SAGE_DIR" && npm start
 fi

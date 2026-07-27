@@ -1,8 +1,8 @@
-# Sage Windows 一键安装脚本
+# Kexvim Windows 一键安装脚本
 # 用法: irm https://gitee.com/moscowzk/sage-dev/raw/main/install.ps1 | iex
 
 $ErrorActionPreference = "Stop"
-$SageDir = "$env:USERPROFILE\.sage"
+$KexvimDir = "$env:USERPROFILE\.sage"
 $RepoUrl = "https://gitee.com/moscowzk/sage-dev"
 
 # 颜色输出
@@ -11,7 +11,7 @@ function Write-Colored($Color, $Text) {
 }
 
 Write-Colored Cyan "======================================"
-Write-Colored Cyan "  Sage 安装程序 (Windows)"
+Write-Colored Cyan "  Kexvim 安装程序 (Windows)"
 Write-Colored Cyan "======================================"
 
 # 1. 检查 Node.js
@@ -31,18 +31,18 @@ $hasGit = $true
 try { git --version | Out-Null } catch { $hasGit = $false }
 
 # 3. 克隆/下载代码
-if (Test-Path "$SageDir\src") {
-    Write-Colored Cyan "[~] Sage 目录已存在，拉取更新..."
-    Push-Location $SageDir
+if (Test-Path "$KexvimDir\src") {
+    Write-Colored Cyan "[~] Kexvim 目录已存在，拉取更新..."
+    Push-Location $KexvimDir
     if ($hasGit) {
         git pull --ff-only 2>$null
     }
     Pop-Location
 } else {
-    Write-Colored Cyan "[~] 下载 Sage..."
+    Write-Colored Cyan "[~] 下载 Kexvim..."
     if ($hasGit) {
         git clone $RepoUrl "$env:TEMP\sage-tmp" 2>$null
-        Move-Item "$env:TEMP\sage-tmp\*" $SageDir -Force 2>$null
+        Move-Item "$env:TEMP\sage-tmp\*" $KexvimDir -Force 2>$null
         Remove-Item "$env:TEMP\sage-tmp" -Recurse -Force 2>$null
     } else {
         # 没 git 就用 zip 下载
@@ -52,7 +52,7 @@ if (Test-Path "$SageDir\src") {
         Expand-Archive -Path $zipPath -DestinationPath "$env:TEMP\sage-tmp" -Force
         $extracted = Get-ChildItem "$env:TEMP\sage-tmp\sage-master" | Select-Object -First 1
         if (-not $extracted) { $extracted = Get-ChildItem "$env:TEMP\sage-tmp" | Select-Object -First 1 }
-        Copy-Item "$($extracted.FullName)\*" $SageDir -Recurse -Force
+        Copy-Item "$($extracted.FullName)\*" $KexvimDir -Recurse -Force
         Remove-Item "$env:TEMP\sage-tmp" -Recurse -Force
         Remove-Item $zipPath -Force
     }
@@ -60,19 +60,19 @@ if (Test-Path "$SageDir\src") {
 }
 
 # 4. 安装依赖
-Push-Location $SageDir
+Push-Location $KexvimDir
 Write-Colored Cyan "[~] 安装 npm 依赖..."
 npm install --ignore-scripts 2>&1 | Out-Null
 Write-Colored Green "[✓] 依赖安装完成"
 Pop-Location
 
 # 5. 配置 API Key
-$envPath = "$SageDir\data\.env"
+$envPath = "$KexvimDir\data\.env"
 if (-not (Test-Path $envPath)) {
-    if (-not (Test-Path "$SageDir\data")) { New-Item -ItemType Directory -Path "$SageDir\data" -Force | Out-Null }
+    if (-not (Test-Path "$KexvimDir\data")) { New-Item -ItemType Directory -Path "$KexvimDir\data" -Force | Out-Null }
     $key = Read-Host "请输入 DeepSeek API Key"
     if ($key) {
-        Set-Content -Path $envPath -Value "DEEPSEEK_API_KEY=$key`nSAGE_HOME=$SageDir"
+        Set-Content -Path $envPath -Value "DEEPSEEK_API_KEY=$key`nSAGE_HOME=$KexvimDir"
         Write-Colored Green "[✓] API Key 已保存"
     } else {
         Write-Colored Yellow "[!] 跳过 API Key 配置，稍后编辑 $envPath"
@@ -80,23 +80,23 @@ if (-not (Test-Path $envPath)) {
 }
 
 # 6. 创建快捷方式
-$shortcutPath = "$env:USERPROFILE\Desktop\Sage.lnk"
+$shortcutPath = "$env:USERPROFILE\Desktop\Kexvim.lnk"
 if (-not (Test-Path $shortcutPath)) {
     $wshell = New-Object -ComObject WScript.Shell
     $shortcut = $wshell.CreateShortcut($shortcutPath)
     $shortcut.TargetPath = "powershell.exe"
-    $shortcut.Arguments = "-NoExit -Command cd '$SageDir'; npm start"
-    $shortcut.Description = "Sage AI Assistant"
+    $shortcut.Arguments = "-NoExit -Command cd '$KexvimDir'; npm start"
+    $shortcut.Description = "Kexvim AI Assistant"
     $shortcut.Save()
     Write-Colored Green "[✓] 桌面快捷方式已创建"
 }
 
 Write-Colored Cyan "======================================"
-Write-Colored Green "  Sage 安装完成！"
+Write-Colored Green "  Kexvim 安装完成！"
 Write-Colored Cyan "======================================"
 Write-Host ""
-Write-Host "在桌面双击 [Sage] 快捷方式启动"
-Write-Host "或打开终端: cd $SageDir && npm start"
+Write-Host "在桌面双击 [Kexvim] 快捷方式启动"
+Write-Host "或打开终端: cd $KexvimDir && npm start"
 Write-Host ""
-Read-Host "按 Enter 启动 Sage..."
-Start-Process powershell -ArgumentList "-NoExit -Command cd '$SageDir'; npm start"
+Read-Host "按 Enter 启动 Kexvim..."
+Start-Process powershell -ArgumentList "-NoExit -Command cd '$KexvimDir'; npm start"

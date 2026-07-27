@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
-title Sage 安装程序
+title Kexvim 安装程序
 setlocal enabledelayedexpansion
 
 echo ====================================
-echo    Sage 一键安装 (Windows)
+echo    Kexvim 一键安装 (Windows)
 echo ====================================
 echo.
 
@@ -33,7 +33,7 @@ if %errorlevel% neq 0 (
 )
 
 REM 3. 从公开 Release 仓克隆（浅克隆，只有最新文件）
-echo [~] 下载 Sage...
+echo [~] 下载 Kexvim...
 if exist "%SAGE_DIR%" rmdir /s /q "%SAGE_DIR%"
 git clone --depth 1 https://gitee.com/moscowzk/sage.git "%SAGE_DIR%"
 echo [✓] 下载完成
@@ -52,21 +52,21 @@ if not exist "%ENV_FILE%" (
 )
 
 REM 5. 桌面快捷方式
-set SHORTCUT=%USERPROFILE%\Desktop\Sage.lnk
+set SHORTCUT=%USERPROFILE%\Desktop\Kexvim.lnk
 if not exist "%SHORTCUT%" (
-    powershell -Command "$WS = New-Object -ComObject WScript.Shell; $SC = $WS.CreateShortcut('%SHORTCUT%'); $SC.TargetPath = 'powershell.exe'; $SC.Arguments = '-NoExit -Command cd ''%SAGE_DIR%''; npm start'; $SC.Description = 'Sage AI Assistant'; $SC.Save()"
+    powershell -Command "$WS = New-Object -ComObject WScript.Shell; $SC = $WS.CreateShortcut('%SHORTCUT%'); $SC.TargetPath = 'powershell.exe'; $SC.Arguments = '-NoExit -Command cd ''%SAGE_DIR%''; npm start'; $SC.Description = 'Kexvim AI Assistant'; $SC.Save()"
     if exist "%SHORTCUT%" echo [✓] 桌面快捷方式已创建
 )
 
 echo.
 echo ====================================
 echo  安装完成！
-echo  双击桌面 [Sage] 快捷方式启动
+echo  双击桌面 [Kexvim] 快捷方式启动
 echo  或终端: cd %SAGE_DIR% ^&^& npm start
 echo ====================================
 echo.
 
-set /p START_NOW=是否立即启动 Sage？（y/N）: 
+set /p START_NOW=是否立即启动 Kexvim？（y/N）: 
 if /i "!START_NOW!"=="y" (
     start powershell -NoExit -Command "cd '%SAGE_DIR%'; npm start"
 )
