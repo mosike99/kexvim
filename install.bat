@@ -32,11 +32,14 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-REM 3. 从公开 Release 仓克隆（浅克隆，只有最新文件）
+REM 3. 从公开 Release 仓克隆（浅克隆）
 echo [~] 下载 Kexvim...
 if exist "%KEXVIM_DIR%" rmdir /s /q "%KEXVIM_DIR%"
 git clone --depth 1 https://gitee.com/moscowzk/kexvim.git "%KEXVIM_DIR%"
 echo [✓] 下载完成
+echo [~] 安装依赖...
+cd /d "%KEXVIM_DIR%" && npm install --omit=dev
+echo [✓] 依赖安装完成
 
 REM 4. 配置 API Key
 set ENV_FILE=%KEXVIM_DIR%\data\.env

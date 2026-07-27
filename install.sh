@@ -49,6 +49,10 @@ echo ">> 第 1 步：下载 Kexvim"
 rm -rf "$KEXVIM_DIR"
 git clone --depth 1 "$REPO" "$KEXVIM_DIR"
 echo "✅ 下载完成"
+echo ""
+echo ">> 安装依赖..."
+cd "$KEXVIM_DIR" && npm install --omit=dev
+echo "✅ 依赖安装完成"
 
 # 3. 配置 API Key
 echo ""
