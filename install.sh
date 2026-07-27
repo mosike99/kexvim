@@ -1,7 +1,7 @@
 #!/bin/bash
 # Kexvim 一键安装脚本 (Linux/macOS)
 # 从公开 Release 仓浅克隆，无 zip 文件
-# 用法: bash <(curl -s https://gitee.com/moscowzk/sage/raw/main/install.sh)
+# 用法: bash <(curl -s https://gitee.com/moscowzk/kexvim/raw/main/install.sh)
 
 set -e
 

@@ -8,7 +8,7 @@ echo "===================================="
 echo
 
 SAGE_DIR="$HOME/.sage"
-REPO="https://gitee.com/moscowzk/sage-dev.git"
+REPO="https://gitee.com/moscowzk/kexvim-dev.git"
 
 # 1. Node.js
 if ! command -v node &>/dev/null; then

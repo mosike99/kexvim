@@ -1,9 +1,9 @@
 # Kexvim Windows 一键安装脚本
-# 用法: irm https://gitee.com/moscowzk/sage-dev/raw/main/install.ps1 | iex
+# 用法: irm https://gitee.com/moscowzk/kexvim-dev/raw/main/install.ps1 | iex
 
 $ErrorActionPreference = "Stop"
 $KexvimDir = "$env:USERPROFILE\.sage"
-$RepoUrl = "https://gitee.com/moscowzk/sage-dev"
+$RepoUrl = "https://gitee.com/moscowzk/kexvim-dev"
 
 # 颜色输出
 function Write-Colored($Color, $Text) {
@@ -46,7 +46,7 @@ if (Test-Path "$KexvimDir\src") {
         Remove-Item "$env:TEMP\sage-tmp" -Recurse -Force 2>$null
     } else {
         # 没 git 就用 zip 下载
-        $zipUrl = "https://gitee.com/moscowzk/sage-dev/repository/archive/master.zip"
+        $zipUrl = "https://gitee.com/moscowzk/kexvim-dev/repository/archive/master.zip"
         $zipPath = "$env:TEMP\sage.zip"
         Invoke-WebRequest -Uri $zipUrl -OutFile $zipPath
         Expand-Archive -Path $zipPath -DestinationPath "$env:TEMP\sage-tmp" -Force
