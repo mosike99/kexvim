@@ -35,7 +35,7 @@ if (Test-Path "$KexvimDir\src") {
     Write-Colored Cyan "[~] Kexvim 目录已存在，拉取更新..."
     Push-Location $KexvimDir
     if ($hasGit) {
-        git pull --ff-only 2>$null
+        git pull --ff-only 2>&1 | Out-Null
     }
     Pop-Location
 } else {
@@ -43,9 +43,9 @@ if (Test-Path "$KexvimDir\src") {
     Remove-Item "$env:TEMP\kexvim-tmp" -Recurse -Force -ErrorAction SilentlyContinue 2>$null
     Remove-Item "$env:USERPROFILE\.kexvim" -Recurse -Force -ErrorAction SilentlyContinue 2>$null
     if ($hasGit) {
-        git clone $RepoUrl "$env:TEMP\kexvim-tmp" 2>$null
-        Move-Item "$env:TEMP\kexvim-tmp\*" $KexvimDir -Force 2>$null
-        Remove-Item "$env:TEMP\kexvim-tmp" -Recurse -Force 2>$null
+        git clone --quiet $RepoUrl "$env:TEMP\kexvim-tmp" 2>&1 | Out-Null
+        Move-Item "$env:TEMP\kexvim-tmp\*" $KexvimDir -Force 2>&1 | Out-Null
+        Remove-Item "$env:TEMP\kexvim-tmp" -Recurse -Force 2>&1 | Out-Null
     } else {
         # 没 git 就用 zip 下载
         $zipUrl = "https://gitee.com/moscowzk/kexvim/repository/archive/master.zip"
