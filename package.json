@@ -1,8 +1,8 @@
 {
-  "name": "@moscowzk/sage",
+  "name": "@moscowzk/elox",
   "type": "module",
   "scripts": {
-    "start": "node sage.js"
+    "start": "node elox.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -12,7 +12,7 @@
   },
   "version": "0.1.0",
   "bin": {
-    "sage": "sage.js"
+    "elox": "elox.js"
   },
   "description": "Sage AI - personal AI assistant that thinks with you"
 }
