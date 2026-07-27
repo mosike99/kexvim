@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var ve=(u=>typeof require<"u"?require:typeof Proxy<"u"?new Proxy(u,{get:(e,t)=>(typeof require<"u"?require:e)[t]}):u)(function(u){if(typeof require<"u")return require.apply(this,arguments);throw Error('Dynamic require of "'+u+'" is not supported')});var un=(u,e,t)=>()=>{if(t)throw t[0];try{return u&&(e=u(u=0)),e}catch(r){throw t=[r],r}};import{DatabaseSync as Os}from"node:sqlite";var Ns,Be,dr=un(()=>{"use strict";Ns=`
 CREATE TABLE IF NOT EXISTS state_entities (
   entity_id   TEXT PRIMARY KEY,
