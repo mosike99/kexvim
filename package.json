@@ -1,8 +1,8 @@
 {
-  "name": "@moscowzk/elox",
+  "name": "@moscowzk/kexvim",
   "type": "module",
   "scripts": {
-    "start": "node elox.js"
+    "start": "node kexvim.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -12,7 +12,7 @@
   },
   "version": "0.1.0",
   "bin": {
-    "elox": "elox.js"
+    "kexvim": "kexvim.js"
   },
   "description": "Sage AI - personal AI assistant that thinks with you"
 }
