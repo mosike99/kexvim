@@ -43,7 +43,8 @@ if (Test-Path "$KexvimDir\src") {
     Remove-Item "$env:TEMP\kexvim-tmp" -Recurse -Force -ErrorAction SilentlyContinue 2>$null
     Remove-Item "$env:USERPROFILE\.kexvim" -Recurse -Force -ErrorAction SilentlyContinue 2>$null
     if ($hasGit) {
-        git clone --quiet $RepoUrl "$env:TEMP\kexvim-tmp" 2>&1 | Out-Null
+        New-Item -ItemType Directory -Path $KexvimDir -Force | Out-Null
+        git clone --quiet $RepoUrl "$env:TEMP\kexvim-tmp" 2>$null
         Move-Item "$env:TEMP\kexvim-tmp\*" $KexvimDir -Force 2>&1 | Out-Null
         Remove-Item "$env:TEMP\kexvim-tmp" -Recurse -Force 2>&1 | Out-Null
     } else {
