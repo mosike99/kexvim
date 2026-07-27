@@ -40,6 +40,8 @@ if (Test-Path "$KexvimDir\src") {
     Pop-Location
 } else {
     Write-Colored Cyan "[~] 下载 Kexvim..."
+    Remove-Item "$env:TEMP\kexvim-tmp" -Recurse -Force -ErrorAction SilentlyContinue 2>$null
+    Remove-Item "$env:USERPROFILE\.kexvim" -Recurse -Force -ErrorAction SilentlyContinue 2>$null
     if ($hasGit) {
         git clone $RepoUrl "$env:TEMP\kexvim-tmp" 2>$null
         Move-Item "$env:TEMP\kexvim-tmp\*" $KexvimDir -Force 2>$null
