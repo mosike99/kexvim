@@ -2,7 +2,7 @@
   "name": "sage",
   "type": "module",
   "scripts": {
-    "start": "node dist/sage.js"
+    "start": "node sage.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
