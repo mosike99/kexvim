@@ -3,7 +3,7 @@
 
 $ErrorActionPreference = "Stop"
 $KexvimDir = "$env:USERPROFILE\.kexvim"
-$RepoUrl = "https://gitee.com/moscowzk/kexvim-dev"
+$RepoUrl = "https://gitee.com/moscowzk/kexvim"
 
 # 颜色输出
 function Write-Colored($Color, $Text) {
@@ -46,7 +46,7 @@ if (Test-Path "$KexvimDir\src") {
         Remove-Item "$env:TEMP\kexvim-tmp" -Recurse -Force 2>$null
     } else {
         # 没 git 就用 zip 下载
-        $zipUrl = "https://gitee.com/moscowzk/kexvim-dev/repository/archive/master.zip"
+        $zipUrl = "https://gitee.com/moscowzk/kexvim/repository/archive/master.zip"
         $zipPath = "$env:TEMP\kexvim.zip"
         Invoke-WebRequest -Uri $zipUrl -OutFile $zipPath
         Expand-Archive -Path $zipPath -DestinationPath "$env:TEMP\kexvim-tmp" -Force
