@@ -1,0 +1,24 @@
+{
+  "name": "sage",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "node dist/Main.js"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "@types/ws": "^8.18.1",
+    "tsup": "^8.4.0",
+    "typescript": "^5.7.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "cron": "^4.4.0",
+    "js-yaml": "^5.2.1",
+    "sqlite": "file:../../../tmp/sqlite-shim",
+    "tsx": "^4.23.1",
+    "ws": "^8.21.1"
+  }
+}
