@@ -5,8 +5,8 @@
 
 set -e
 
-SAGE_DIR="$HOME/.sage"
-REPO="https://gitee.com/moscowzk/sage.git"
+KEXVIM_DIR="$HOME/.kexvim"
+REPO="https://gitee.com/moscowzk/kexvim.git"
 
 # 检测 OS
 OS="linux"
@@ -46,21 +46,21 @@ fi
 # 2. 克隆
 echo ""
 echo ">> 第 1 步：下载 Kexvim"
-rm -rf "$SAGE_DIR"
-git clone --depth 1 "$REPO" "$SAGE_DIR"
+rm -rf "$KEXVIM_DIR"
+git clone --depth 1 "$REPO" "$KEXVIM_DIR"
 echo "✅ 下载完成"
 
 # 3. 配置 API Key
 echo ""
 echo ">> 第 2 步：配置 API Key"
-mkdir -p "$SAGE_DIR/data"
-ENV_FILE="$SAGE_DIR/data/.env"
+mkdir -p "$KEXVIM_DIR/data"
+ENV_FILE="$KEXVIM_DIR/data/.env"
 if [ ! -f "$ENV_FILE" ]; then
     read -r -p "输入 DeepSeek API Key (留空跳过): " DS_KEY
     if [ -n "$DS_KEY" ]; then
         cat > "$ENV_FILE" << EOF
 DEEPSEEK_API_KEY=${DS_KEY}
-SAGE_HOME=${SAGE_DIR}
+KEXVIM_HOME=${KEXVIM_DIR}
 EOF
         echo "✅ API Key 已保存"
     fi
@@ -72,15 +72,15 @@ echo ">> 第 3 步：系统服务"
 if [ "$OS" = "linux" ] && command -v systemctl &>/dev/null; then
     SYSTEMD_DIR="$HOME/.config/systemd/user"
     mkdir -p "$SYSTEMD_DIR"
-    cat > "$SYSTEMD_DIR/sage.service" << EOF
+    cat > "$SYSTEMD_DIR/kexvim.service" << EOF
 [Unit]
 Description=Kexvim AI Assistant
 After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=$(which node) $SAGE_DIR/dist/Main.js
-WorkingDirectory=$SAGE_DIR
+ExecStart=$(which node) $KEXVIM_DIR/kexvim.js
+WorkingDirectory=$KEXVIM_DIR
 Restart=on-failure
 RestartSec=5
 
@@ -93,20 +93,20 @@ EOF
 elif [ "$OS" = "macos" ]; then
     PLIST_DIR="$HOME/Library/LaunchAgents"
     mkdir -p "$PLIST_DIR"
-    cat > "$PLIST_DIR/com.sage.app.plist" << EOF
+    cat > "$PLIST_DIR/com.kexvim.app.plist" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.sage.app</string>
+    <string>com.kexvim.app</string>
     <key>ProgramArguments</key>
     <array>
         <string>$(which node)</string>
-        <string>${SAGE_DIR}/dist/Main.js</string>
+        <string>${KEXVIM_DIR}/kexvim.js</string>
     </array>
     <key>WorkingDirectory</key>
-    <string>${SAGE_DIR}</string>
+    <string>${KEXVIM_DIR}</string>
     <key>RunAtLoad</key>
     <true/>
     <key>KeepAlive</key>
@@ -114,7 +114,7 @@ elif [ "$OS" = "macos" ]; then
 </dict>
 </plist>
 EOF
-    launchctl load "$PLIST_DIR/com.sage.app.plist" 2>/dev/null || true
+    launchctl load "$PLIST_DIR/com.kexvim.app.plist" 2>/dev/null || true
     echo "✅ launchd 服务已创建"
 else
     echo "   跳过（前台启动即可）"
@@ -124,11 +124,11 @@ echo ""
 echo "═══════════════════════════════════════════════"
 echo "  ✅ Kexvim 安装完成！"
 echo ""
-echo "  启动:     cd ~/.sage && npm start"
+echo "  启动:     cd ~/.kexvim && npm start"
 echo "═══════════════════════════════════════════════"
 echo ""
 
 read -r -p "是否立即启动 Kexvim？（y/N）: " START_NOW
 if [ "$START_NOW" = "y" ] || [ "$START_NOW" = "Y" ]; then
-    cd "$SAGE_DIR" && npm start
+    cd "$KEXVIM_DIR" && npm start
 fi

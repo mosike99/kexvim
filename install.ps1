@@ -2,7 +2,7 @@
 # 用法: irm https://gitee.com/moscowzk/kexvim-dev/raw/main/install.ps1 | iex
 
 $ErrorActionPreference = "Stop"
-$KexvimDir = "$env:USERPROFILE\.sage"
+$KexvimDir = "$env:USERPROFILE\.kexvim"
 $RepoUrl = "https://gitee.com/moscowzk/kexvim-dev"
 
 # 颜色输出
@@ -41,19 +41,19 @@ if (Test-Path "$KexvimDir\src") {
 } else {
     Write-Colored Cyan "[~] 下载 Kexvim..."
     if ($hasGit) {
-        git clone $RepoUrl "$env:TEMP\sage-tmp" 2>$null
-        Move-Item "$env:TEMP\sage-tmp\*" $KexvimDir -Force 2>$null
-        Remove-Item "$env:TEMP\sage-tmp" -Recurse -Force 2>$null
+        git clone $RepoUrl "$env:TEMP\kexvim-tmp" 2>$null
+        Move-Item "$env:TEMP\kexvim-tmp\*" $KexvimDir -Force 2>$null
+        Remove-Item "$env:TEMP\kexvim-tmp" -Recurse -Force 2>$null
     } else {
         # 没 git 就用 zip 下载
         $zipUrl = "https://gitee.com/moscowzk/kexvim-dev/repository/archive/master.zip"
-        $zipPath = "$env:TEMP\sage.zip"
+        $zipPath = "$env:TEMP\kexvim.zip"
         Invoke-WebRequest -Uri $zipUrl -OutFile $zipPath
-        Expand-Archive -Path $zipPath -DestinationPath "$env:TEMP\sage-tmp" -Force
-        $extracted = Get-ChildItem "$env:TEMP\sage-tmp\sage-master" | Select-Object -First 1
-        if (-not $extracted) { $extracted = Get-ChildItem "$env:TEMP\sage-tmp" | Select-Object -First 1 }
+        Expand-Archive -Path $zipPath -DestinationPath "$env:TEMP\kexvim-tmp" -Force
+        $extracted = Get-ChildItem "$env:TEMP\kexvim-tmp\kexvim-master" | Select-Object -First 1
+        if (-not $extracted) { $extracted = Get-ChildItem "$env:TEMP\kexvim-tmp" | Select-Object -First 1 }
         Copy-Item "$($extracted.FullName)\*" $KexvimDir -Recurse -Force
-        Remove-Item "$env:TEMP\sage-tmp" -Recurse -Force
+        Remove-Item "$env:TEMP\kexvim-tmp" -Recurse -Force
         Remove-Item $zipPath -Force
     }
     Write-Colored Green "[✓] 代码下载完成"
@@ -72,7 +72,7 @@ if (-not (Test-Path $envPath)) {
     if (-not (Test-Path "$KexvimDir\data")) { New-Item -ItemType Directory -Path "$KexvimDir\data" -Force | Out-Null }
     $key = Read-Host "请输入 DeepSeek API Key"
     if ($key) {
-        Set-Content -Path $envPath -Value "DEEPSEEK_API_KEY=$key`nSAGE_HOME=$KexvimDir"
+        Set-Content -Path $envPath -Value "DEEPSEEK_API_KEY=$key`nKEXVIM_HOME=$KexvimDir"
         Write-Colored Green "[✓] API Key 已保存"
     } else {
         Write-Colored Yellow "[!] 跳过 API Key 配置，稍后编辑 $envPath"
