@@ -1,9 +1,8 @@
 # Kexvim Windows 一键安装脚本
-# 用法: irm https://gitee.com/moscowzk/kexvim-dev/raw/main/install.ps1 | iex
+# 用法: irm https://gitee.com/moscowzk/kexvim/raw/main/install.ps1 | iex
 
-$ErrorActionPreference = "Stop"
-$KexvimDir = "$env:USERPROFILE\.kexvim"
 $RepoUrl = "https://gitee.com/moscowzk/kexvim"
+$KexvimDir = "$env:USERPROFILE\.kexvim"
 
 # 颜色输出
 function Write-Colored($Color, $Text) {
@@ -41,14 +40,13 @@ if (Test-Path "$KexvimDir\src") {
 } else {
     Write-Colored Cyan "[~] 下载 Kexvim..."
     Remove-Item "$env:TEMP\kexvim-tmp" -Recurse -Force -ErrorAction SilentlyContinue 2>$null
-    Remove-Item "$env:USERPROFILE\.kexvim" -Recurse -Force -ErrorAction SilentlyContinue 2>$null
+    Remove-Item "$KexvimDir" -Recurse -Force -ErrorAction SilentlyContinue 2>$null
     if ($hasGit) {
         New-Item -ItemType Directory -Path $KexvimDir -Force | Out-Null
         git clone --quiet $RepoUrl "$env:TEMP\kexvim-tmp" 2>$null
         Move-Item "$env:TEMP\kexvim-tmp\*" $KexvimDir -Force 2>&1 | Out-Null
-        Remove-Item "$env:TEMP\kexvim-tmp" -Recurse -Force 2>&1 | Out-Null
+        Remove-Item "$env:TEMP\kexvim-tmp" -Recurse -Force 2>$null
     } else {
-        # 没 git 就用 zip 下载
         $zipUrl = "https://gitee.com/moscowzk/kexvim/repository/archive/master.zip"
         $zipPath = "$env:TEMP\kexvim.zip"
         Invoke-WebRequest -Uri $zipUrl -OutFile $zipPath
@@ -75,8 +73,10 @@ if (-not (Test-Path $envPath)) {
     if (-not (Test-Path "$KexvimDir\data")) { New-Item -ItemType Directory -Path "$KexvimDir\data" -Force | Out-Null }
     $key = Read-Host "请输入 DeepSeek API Key"
     if ($key) {
-        Set-Content -Path $envPath -Value "DEEPSEEK_API_KEY=$key`nKEXVIM_HOME=$KexvimDir"
-        Write-Colored Green "[✓] API Key 已保存"
+        # 强制 ASCII/UTF-8 编码，避免 Set-Content 默认 UTF-16LE 导致 kexvim 读不到
+        Set-Content -Path $envPath -Value "DEEPSEEK_API_KEY=$key" -Encoding ASCII
+        Add-Content -Path $envPath -Value "KEXVIM_HOME=$KexvimDir" -Encoding ASCII
+        Write-Colored Green "[✓] API Key 已保存到 $envPath"
     } else {
         Write-Colored Yellow "[!] 跳过 API Key 配置，稍后编辑 $envPath"
     }
