@@ -12,34 +12,16 @@ where node >nul 2>nul || (
     set "PATH=%DIR%;%PATH%"
 )
 
-REM 2. Download kexvim.js if missing
+REM 2. Download files if missing
 if not exist "%DIR%\kexvim.js" (
     echo [~] Downloading kexvim.js...
     mkdir "%DIR%" 2>nul
     powershell -Command "iwr '%REPO%/raw/main/kexvim.js' -OutFile '%DIR%\kexvim.js'" >nul 2>nul
 )
-
-REM 3. Launch
-if not exist "%DIR%\data\.env" goto :setup
-if not "%1"=="" goto :args
-
-:run
-powershell -WindowStyle Hidden -Command "Start-Process -WindowStyle Hidden -FilePath 'node' -ArgumentList '\"%DIR%\kexvim.js\"' -WorkingDirectory '%DIR%'" >nul 2>&1
-echo Kexvim started in background
-echo Press any key to close this window
-pause >nul
-exit /b 0
-
-:setup
-node "%DIR%\kexvim.js" %*
-if exist "%DIR%\data\.env" (
-    echo.
-    echo Kexvim ready. Press any key to start
-    pause >nul
-    powershell -WindowStyle Hidden -Command "Start-Process -WindowStyle Hidden -FilePath 'node' -ArgumentList '\"%DIR%\kexvim.js\"' -WorkingDirectory '%DIR%'" >nul 2>&1
+if not exist "%DIR%\watchdog.js" (
+    powershell -Command "iwr '%REPO%/raw/main/watchdog.js' -OutFile '%DIR%\watchdog.js'" >nul 2>nul
 )
-exit /b 0
 
-:args
-node "%DIR%\kexvim.js" %*
+REM 3. Launch watchdog (it manages kexvim.js)
+node "%DIR%\watchdog.js" %*
 pause
