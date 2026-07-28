@@ -12,11 +12,16 @@ where node >nul 2>nul || (
     set "PATH=%DIR%;%PATH%"
 )
 
-REM 2. Download kexvim.js if missing
+REM 2. Download kexvim.js + skills if missing
 if not exist "%DIR%\kexvim.js" (
     echo [~] Downloading kexvim.js...
     mkdir "%DIR%" 2>nul
     powershell -Command "iwr '%REPO%/raw/main/kexvim.js' -OutFile '%DIR%\kexvim.js'" >nul 2>nul
+    echo [~] Downloading skills...
+    where git >nul 2>nul && (
+        mkdir "%DIR%\skills" 2>nul
+        powershell -Command "$tmp='%TMP%\kexvim-skills'; git clone --depth 1 '%REPO%.git' $tmp --single-branch 2>$null; if(test-path \"$tmp/skills\"){cp -r \"$tmp/skills\" \"%DIR%/skills\"}; rm -r $tmp -force"
+    )
 )
 
 REM 3. Launch (multi-thread: watchdog + agent + guardian)
