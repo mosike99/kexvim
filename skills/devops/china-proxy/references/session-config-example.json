@@ -1,0 +1,92 @@
+{
+  "log": {
+    "level": "info",
+    "output": "/home/ubuntu/.hermes/sing-box.log"
+  },
+  "inbounds": [
+    {
+      "type": "mixed",
+      "tag": "proxy-in",
+      "listen": "127.0.0.1",
+      "listen_port": 7890
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vmess",
+      "tag": "美国1",
+      "server": "us1.jiedian.stream",
+      "server_port": 443,
+      "uuid": "89fd4b99-a6a2-459c-a8c6-a60fa59eb048",
+      "security": "auto",
+      "alter_id": 0,
+      "tls": {
+        "enabled": true,
+        "server_name": "gw.alicdn.com",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vmess",
+      "tag": "日本1",
+      "server": "jp1.cndns.stream",
+      "server_port": 443,
+      "uuid": "89fd4b99-a6a2-459c-a8c6-a60fa59eb048",
+      "security": "auto",
+      "alter_id": 0,
+      "tls": {
+        "enabled": true,
+        "server_name": "gw.alicdn.com",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vmess",
+      "tag": "新加坡1",
+      "server": "sg1.jiedian.stream",
+      "server_port": 443,
+      "uuid": "89fd4b99-a6a2-459c-a8c6-a60fa59eb048",
+      "security": "auto",
+      "alter_id": 0,
+      "tls": {
+        "enabled": true,
+        "server_name": "gw.alicdn.com",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vmess",
+      "tag": "香港1",
+      "server": "hk1.jiedian.stream",
+      "server_port": 8443,
+      "uuid": "89fd4b99-a6a2-459c-a8c6-a60fa59eb048",
+      "security": "auto",
+      "alter_id": 0,
+      "tls": {
+        "enabled": true,
+        "server_name": "gw.alicdn.com",
+        "insecure": true
+      }
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "outbound": "direct",
+        "domain_suffix": [
+          "proxyinfo.net",
+          "xn--xc3ao8r.top",
+          "xingjiabijichang.com",
+          "fcapp.run",
+          "devsapp.net"
+        ]
+      }
+    ],
+    "final": "美国1",
+    "auto_detect_interface": true
+  }
+}
