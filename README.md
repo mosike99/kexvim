@@ -5,7 +5,7 @@
 **要求:** Node.js 22+
 
 ### Windows
-下载 [kexvim.bat](https://gitee.com/moscowzk/kexvim/raw/main/kexvim.bat)，双击运行。
+下载 [kexvim.bat](https://gitee.com/moscowzk/kexvim/raw/main/kexvim.bat?download=1)，双击运行。
 
 ### Linux / macOS
 ```bash
