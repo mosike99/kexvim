@@ -2,10 +2,10 @@
 
 ## 快速开始
 
-**要求:** Node.js 22+
-
 ### Windows
 下载 [kexvim.bat](https://gitee.com/moscowzk/kexvim/raw/main/kexvim.bat?download=1)，双击运行。
+
+首次运行自动：下载 Node.js 便携版 → 下载核心文件 → 配置 API Key。
 
 ### Linux / macOS
 ```bash
@@ -13,10 +13,7 @@ curl -fsSL https://gitee.com/moscowzk/kexvim/raw/main/kexvim.sh -o kexvim.sh && 
 ./kexvim.sh
 ```
 
-首次运行自动下载核心文件、提示安装路径和 API Key。
-
 ## 命令行
-
 ```bash
 ./kexvim.sh restart        # Linux / macOS
 kexvim.bat restart          # Windows

@@ -2,10 +2,28 @@
 title Kexvim
 setlocal enabledelayedexpansion
 
-set "SCRIPT_DIR=%~dp0"
 set "KEXVIM_DIR=%USERPROFILE%\.kexvim"
 set REPO_URL=https://gitee.com/moscowzk/kexvim
 set HAS_ERROR=0
+
+REM 0. 确保 Node.js 可用（没有就自动下载便携版）
+:ensure_node
+where node >nul 2>nul
+if %errorlevel% equ 0 goto :node_ok
+if exist "%KEXVIM_DIR%\node.exe" (
+    set "PATH=%KEXVIM_DIR%;%PATH%"
+    goto :node_ok
+)
+echo [~] 正在下载 Node.js（首次运行需要）...
+mkdir "%KEXVIM_DIR%" 2>nul
+powershell -Command "Invoke-WebRequest -Uri 'https://nodejs.org/dist/v22.0.0/win-x64/node.exe' -OutFile '%KEXVIM_DIR%\node.exe'" >nul 2>nul
+if not exist "%KEXVIM_DIR%\node.exe" (
+    echo [x] Node.js 下载失败，请手动安装 https://nodejs.org
+    pause & exit /b 1
+)
+set "PATH=%KEXVIM_DIR%;%PATH%"
+echo [v] Node.js 就绪
+:node_ok
 
 REM 有参数 → 转发给 kexvim.js
 if not "%1"=="" (
@@ -27,7 +45,7 @@ echo !CHANGE_PATH!|findstr /i "^y$" >nul && (
 )
 echo.
 
-REM 1. 检查 kexvim.js
+REM 1. 下载 kexvim.js
 if not exist "%KEXVIM_DIR%\kexvim.js" (
     echo [~] 下载 kexvim.js...
     mkdir "%KEXVIM_DIR%" 2>nul
@@ -40,7 +58,7 @@ if not exist "%KEXVIM_DIR%\kexvim.js" (
     )
 )
 
-REM 2. 检查 API Key
+REM 2. 配置 API Key
 if not exist "%KEXVIM_DIR%\data\.env" (
     echo.
     echo [~] 首次运行，配置 API Key
@@ -70,7 +88,7 @@ if %HAS_ERROR%==1 (
     echo.
     echo   再次双击此脚本即可启动
     echo.
-    echo   试试: kexvim.bat restart
+    echo   启动试试: kexvim.bat restart
 )
 
 pause
