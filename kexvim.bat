@@ -24,7 +24,7 @@ if not exist "%DIR%\data\.env" goto :setup
 if not "%1"=="" goto :args
 
 :run
-start /B node "%DIR%\kexvim.js" >nul 2>&1
+powershell -WindowStyle Hidden -Command "Start-Process -WindowStyle Hidden -FilePath 'node' -ArgumentList '\"%DIR%\kexvim.js\"' -WorkingDirectory '%DIR%'" >nul 2>&1
 echo Kexvim started in background
 echo Press any key to close this window
 pause >nul
@@ -36,7 +36,7 @@ if exist "%DIR%\data\.env" (
     echo.
     echo Kexvim ready. Press any key to start
     pause >nul
-    start /B node "%DIR%\kexvim.js" >nul 2>&1
+    powershell -WindowStyle Hidden -Command "Start-Process -WindowStyle Hidden -FilePath 'node' -ArgumentList '\"%DIR%\kexvim.js\"' -WorkingDirectory '%DIR%'" >nul 2>&1
 )
 exit /b 0
 
