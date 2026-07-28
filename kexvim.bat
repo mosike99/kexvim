@@ -1,7 +1,4 @@
 @echo off
-title Kexvim
-setlocal
-
 set "DIR=%USERPROFILE%\.kexvim"
 set REPO=https://gitee.com/moscowzk/kexvim
 
@@ -22,6 +19,10 @@ if not exist "%DIR%\kexvim.js" (
     powershell -Command "iwr '%REPO%/raw/main/kexvim.js' -OutFile '%DIR%\kexvim.js'" >nul 2>nul
 )
 
-REM 3. Launch (all user interaction goes to kexvim.js)
+REM 3. Launch
+if exist "%DIR%\data\.env" if "%1"=="" (
+    start /B node "%DIR%\kexvim.js" >nul 2>&1
+    exit /b 0
+)
 node "%DIR%\kexvim.js" %*
 pause
