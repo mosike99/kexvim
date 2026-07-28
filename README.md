@@ -1,38 +1,26 @@
 # Kexvim — AI 个人助理
 
-## 一键安装
+## 快速开始
 
 **要求:** Node.js 22+
 
 ### Windows
-
 ```powershell
-# 1. 下载
-mkdir $env:USERPROFILE\.kexvim -Force
-irm https://gitee.com/moscowzk/kexvim/raw/main/kexvim.js > $env:USERPROFILE\.kexvim\kexvim.js
-
-# 2. 初始化（配置 API Key）
-cd $env:USERPROFILE\.kexvim
+irm https://gitee.com/moscowzk/kexvim/raw/main/kexvim.js > kexvim.js
 node kexvim.js init
-
-# 3. 启动
 node kexvim.js restart
 ```
 
 ### Linux / macOS
-
 ```bash
-# 1. 下载到本地
-mkdir -p ~/.kexvim
-curl -fsSL https://gitee.com/moscowzk/kexvim/raw/main/kexvim.js -o ~/.kexvim/kexvim.js
-
-# 2. 初始化
-cd ~/.kexvim
+curl -fsSL https://gitee.com/moscowzk/kexvim/raw/main/kexvim.js -o kexvim.js
 node kexvim.js init
-
-# 3. 启动
 node kexvim.js restart
 ```
+
+三步完成。`init` 会在 `~/.kexvim` 创建数据目录并配置 API Key，`restart` 以后台进程运行。
+
+> **自定义安装路径:** 下载到目标目录后执行上述命令即可，`init` 会自动识别。
 
 ## 日常使用
 
@@ -44,6 +32,5 @@ node kexvim.js --help       # 查看帮助
 ```
 
 也可用入口脚本（自动定位到安装目录）：
-
-**Linux:** `bash kexvim.sh restart`
-**Windows:** `kexvim.bat restart` 或 `.\kexvim.ps1 restart`
+- **Linux:** `bash kexvim.sh restart`
+- **Windows:** `kexvim.bat restart` 或 `.\kexvim.ps1 restart`
