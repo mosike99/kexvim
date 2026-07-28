@@ -7,9 +7,9 @@
 ### Windows
 
 ```powershell
-# 1. 下载到本地
+# 1. 下载
 mkdir $env:USERPROFILE\.kexvim -Force
-irm https://gitee.com/moscowzk/kexvim/raw/main/kexvim.js -OutFile $env:USERPROFILE\.kexvim\kexvim.js
+irm https://gitee.com/moscowzk/kexvim/raw/main/kexvim.js > $env:USERPROFILE\.kexvim\kexvim.js
 
 # 2. 初始化（配置 API Key）
 cd $env:USERPROFILE\.kexvim
