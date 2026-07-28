@@ -18,6 +18,14 @@ fi
 echo "==================================="
 echo "       Kexvim"
 echo "==================================="
+echo ""
+echo "默认安装路径: $KEXVIM_DIR"
+read -p "是否更改路径？(y/N): " change_path
+if [ "$change_path" = "y" ] || [ "$change_path" = "Y" ]; then
+    read -p "输入新路径: " KEXVIM_DIR
+    echo "使用路径: $KEXVIM_DIR"
+fi
+echo ""
 
 # 1. 检查 kexvim.js
 if [ ! -f "$KEXVIM_DIR/kexvim.js" ]; then

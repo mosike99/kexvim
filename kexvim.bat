@@ -19,6 +19,14 @@ if not "%1"=="" (
 echo ===================================
 echo        Kexvim
 echo ===================================
+echo.
+echo 默认安装路径: %KEXVIM_DIR%
+set /p CHANGE_PATH=是否更改路径？(y/N):
+if /i "!CHANGE_PATH!"=="y" (
+    set /p KEXVIM_DIR=输入新路径:
+    echo 使用路径: !KEXVIM_DIR!
+)
+echo.
 
 REM 1. 检查 kexvim.js
 if not exist "%KEXVIM_DIR%\kexvim.js" (

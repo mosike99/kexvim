@@ -7,18 +7,13 @@
 ### Windows
 下载 [kexvim.bat](https://gitee.com/moscowzk/kexvim/raw/main/kexvim.bat)，双击运行。
 
-或一行命令：
-```powershell
-irm https://gitee.com/moscowzk/kexvim/raw/main/kexvim.bat -OutFile %USERPROFILE%\Desktop\Kexvim.bat; start %USERPROFILE%\Desktop\Kexvim.bat
-```
-
 ### Linux / macOS
 ```bash
 curl -fsSL https://gitee.com/moscowzk/kexvim/raw/main/kexvim.sh -o kexvim.sh && chmod +x kexvim.sh
 ./kexvim.sh
 ```
 
-首次运行自动下载 `kexvim.js` → 提示输入 API Key → 显示常用命令。
+首次运行自动下载核心文件、提示安装路径和 API Key。
 
 ## 命令行
 
@@ -27,4 +22,4 @@ curl -fsSL https://gitee.com/moscowzk/kexvim/raw/main/kexvim.sh -o kexvim.sh && 
 kexvim.bat restart          # Windows
 ```
 
-安装后终端直接输入 `kexvim` 也可操作（`init` 已自动配置 PATH）。
+安装后终端直接输入 `kexvim` 也可操作。
