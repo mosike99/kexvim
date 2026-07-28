@@ -12,16 +12,12 @@ where node >nul 2>nul || (
     set "PATH=%DIR%;%PATH%"
 )
 
-REM 2. Download files if missing
+REM 2. Download kexvim.js if missing
 if not exist "%DIR%\kexvim.js" (
     echo [~] Downloading kexvim.js...
     mkdir "%DIR%" 2>nul
     powershell -Command "iwr '%REPO%/raw/main/kexvim.js' -OutFile '%DIR%\kexvim.js'" >nul 2>nul
 )
-if not exist "%DIR%\watchdog.js" (
-    powershell -Command "iwr '%REPO%/raw/main/watchdog.js' -OutFile '%DIR%\watchdog.js'" >nul 2>nul
-)
 
-REM 3. Launch watchdog (it manages kexvim.js)
-node "%DIR%\watchdog.js" %*
-pause
+REM 3. Launch (multi-thread: watchdog + agent + guardian)
+node "%DIR%\kexvim.js" %*
