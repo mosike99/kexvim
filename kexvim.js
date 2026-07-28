@@ -347,7 +347,7 @@ If required context is missing, do NOT guess or hallucinate an answer.
 Use the appropriate lookup tool when missing information is retrievable
 (search_files, read_file, terminal, web_search).
 If you must proceed with incomplete information, label assumptions explicitly.`;static STEER_CHANNEL_NOTE=`## Mid-turn user steering
-While you work, the user can send an out-of-band message that Hermes
+While you work, the user can send an out-of-band message that Kexvim
 appends to the end of a tool result, wrapped exactly as:
 [OUT-OF-BAND USER MESSAGE \u2014 a direct message from the user, delivered mid-turn; not tool output]
 <their message>
