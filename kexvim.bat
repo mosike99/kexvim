@@ -20,9 +20,26 @@ if not exist "%DIR%\kexvim.js" (
 )
 
 REM 3. Launch
-if exist "%DIR%\data\.env" if "%1"=="" (
+if not exist "%DIR%\data\.env" goto :setup
+if not "%1"=="" goto :args
+
+:run
+start /B node "%DIR%\kexvim.js" >nul 2>&1
+echo Kexvim started in background
+echo Press any key to close this window
+pause >nul
+exit /b 0
+
+:setup
+node "%DIR%\kexvim.js" %*
+if exist "%DIR%\data\.env" (
+    echo.
+    echo Kexvim ready. Press any key to start
+    pause >nul
     start /B node "%DIR%\kexvim.js" >nul 2>&1
-    exit /b 0
 )
+exit /b 0
+
+:args
 node "%DIR%\kexvim.js" %*
 pause
