@@ -18,9 +18,9 @@ node kexvim.js init
 node kexvim.js restart
 ```
 
-三步完成。`init` 会在 `~/.kexvim` 创建数据目录并配置 API Key，`restart` 以后台进程运行。
+三步完成。下载到**任意位置**（桌面/下载/临时文件夹均可），`init` 自动安装到 `~/.kexvim` 并配置 API Key，`restart` 以后台进程运行。下载的引导文件用完可删。
 
-> **自定义安装路径:** 下载到目标目录后执行上述命令即可，`init` 会自动识别。
+> **自定义安装路径:** 设置环境变量 `KEXVIM_HOME`（如 `set KEXVIM_HOME=D:\my-kexvim`）再运行 `init`。
 
 ## 日常使用
 
