@@ -5,32 +5,35 @@
 **要求:** Node.js 22+
 
 ### Windows
+下载 [kexvim.bat](https://gitee.com/moscowzk/kexvim/raw/main/kexvim.bat)，双击运行。自动完成安装和启动。
+
+或 PowerShell 一行命令：
 ```powershell
-irm https://gitee.com/moscowzk/kexvim/raw/main/kexvim.js > kexvim.js
-node kexvim.js init
-node kexvim.js restart
+irm https://gitee.com/moscowzk/kexvim/raw/main/kexvim.bat -OutFile %USERPROFILE%\Desktop\Kexvim.bat; start %USERPROFILE%\Desktop\Kexvim.bat
 ```
 
 ### Linux / macOS
 ```bash
-curl -fsSL https://gitee.com/moscowzk/kexvim/raw/main/kexvim.js -o kexvim.js
-node kexvim.js init
-node kexvim.js restart
+curl -fsSL https://gitee.com/moscowzk/kexvim/raw/main/kexvim.sh -o kexvim.sh && chmod +x kexvim.sh
+./kexvim.sh
 ```
 
-三步完成。下载到**任意位置**（桌面/下载/临时文件夹均可），`init` 自动安装到 `~/.kexvim` 并配置 API Key，`restart` 以后台进程运行。下载的引导文件用完可删。
+首次双击会自动：下载 kexvim.js → 提示输入 API Key → 启动。之后双击直接启动。
 
-> **自定义安装路径:** 设置环境变量 `KEXVIM_HOME`（如 `set KEXVIM_HOME=D:\my-kexvim`）再运行 `init`。
+## 命令行用法
 
-## 日常使用
+安装后可在终端直接输入 `kexvim`（`init` 已自动配置 PATH）：
 
 ```bash
-node kexvim.js              # 正常运行（QQ Bot / TUI）
-node kexvim.js update       # 拉取更新并重启
-node kexvim.js restart      # 重启
-node kexvim.js --help       # 查看帮助
+kexvim              # 启动
+kexvim update       # 更新
+kexvim restart      # 重启
+kexvim --help       # 帮助
 ```
 
-也可用入口脚本（自动定位到安装目录）：
-- **Linux:** `bash kexvim.sh restart`
-- **Windows:** `kexvim.bat restart` 或 `.\kexvim.ps1 restart`
+或通过入口脚本：
+```bash
+bash kexvim.sh restart      # Linux
+kexvim.bat restart          # Windows
+.\kexvim.ps1 restart        # Windows PowerShell
+```
