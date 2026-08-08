@@ -16,6 +16,19 @@ where node >nul 2>nul || (
     set "PATH=%DIR%\node;%PATH%"
 )
 
+REM 1b. Verify bundled node meets minimum version (node:sqlite needs >=22.5)
+if exist "%DIR%\node\node.exe" (
+    "%DIR%\node\node.exe" -e "process.exit(parseInt(process.versions.node.split('.')[1]) >= 5 ? 0 : 1)" >nul 2>nul
+    if errorlevel 1 (
+        echo [~] Node too old, re-downloading %NODEVER%...
+        rmdir /s /q "%DIR%\node" 2>nul
+        powershell -NoProfile -Command "iwr 'https://nodejs.org/dist/%NODEVER%/node-%NODEVER%-win-x64.zip' -OutFile '%DIR%\node.zip'" >nul 2>nul
+        powershell -NoProfile -Command "Expand-Archive -Path '%DIR%\node.zip' -DestinationPath '%DIR%' -Force" >nul 2>nul
+        move /y "%DIR%\node-%NODEVER%-win-x64" "%DIR%\node" >nul 2>nul
+        del "%DIR%\node.zip" 2>nul
+    )
+)
+
 REM 2. Download kexvim.js if missing
 if not exist "%DIR%\kexvim.js" (
     echo [~] Downloading kexvim.js...
@@ -51,5 +64,18 @@ if not exist "%DIR%\node_modules\cron" (
     )
 )
 
-REM 4. Launch (multi-thread: watchdog + agent + guardian)
+REM 4. First-run: guide user through init (interactive API key entry)
+if not exist "%DIR%\data\config.yaml" (
+    echo.
+    echo [~] kexvim not initialized yet. Running first-time setup...
+    echo [~] You will be prompted for your API key. Keep this window open.
+    echo.
+    call "%DIR%\node\node.exe" "%DIR%\kexvim.js" init
+    echo.
+    echo [~] Setup complete. Run kexvim.bat again to start.
+    pause
+    exit /b 0
+)
+
+REM 5. Launch (multi-thread: watchdog + agent + guardian)
 "%DIR%\node\node.exe" "%DIR%\kexvim.js" %*
