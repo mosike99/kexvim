@@ -1,7 +1,7 @@
 @echo off
 set "DIR=%USERPROFILE%\.kexvim"
 set REPO=https://gitee.com/moscowzk/kexvim
-set NODEVER=v22.0.0
+set NODEVER=v22.18.0
 
 REM 1. Check / install Node.js (full zip with npm)
 where node >nul 2>nul || (
