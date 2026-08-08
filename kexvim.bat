@@ -1,15 +1,19 @@
 @echo off
 set "DIR=%USERPROFILE%\.kexvim"
 set REPO=https://gitee.com/moscowzk/kexvim
+set NODEVER=v22.0.0
 
-REM 1. Check / install Node.js
+REM 1. Check / install Node.js (full zip with npm)
 where node >nul 2>nul || (
-    if not exist "%DIR%\node.exe" (
-        echo [~] Downloading Node.js...
+    if not exist "%DIR%\node\node.exe" (
+        echo [~] Downloading Node.js %NODEVER%...
         mkdir "%DIR%" 2>nul
-        powershell -Command "iwr 'https://nodejs.org/dist/v22.0.0/win-x64/node.exe' -OutFile '%DIR%\node.exe'" >nul 2>nul
+        powershell -NoProfile -Command "iwr 'https://nodejs.org/dist/%NODEVER%/node-%NODEVER%-win-x64.zip' -OutFile '%DIR%\node.zip'" >nul 2>nul
+        powershell -NoProfile -Command "Expand-Archive -Path '%DIR%\node.zip' -DestinationPath '%DIR%' -Force" >nul 2>nul
+        move /y "%DIR%\node-%NODEVER%-win-x64" "%DIR%\node" >nul 2>nul
+        del "%DIR%\node.zip" 2>nul
     )
-    set "PATH=%DIR%;%PATH%"
+    set "PATH=%DIR%\node;%PATH%"
 )
 
 REM 2. Download kexvim.js + package.json if missing
@@ -29,7 +33,7 @@ REM 3. Install dependencies if missing (kexvim.js needs external modules: cron/j
 if not exist "%DIR%\node_modules\cron" (
     echo [~] Installing dependencies...
     cd /d "%DIR%"
-    call npm install --omit=dev --no-audit --no-fund
+    call "%DIR%\node\npm.cmd" install --omit=dev --no-audit --no-fund
     if errorlevel 1 (
         echo [X] npm install failed. Please install Node.js v22+ from https://nodejs.org
         pause
@@ -38,4 +42,4 @@ if not exist "%DIR%\node_modules\cron" (
 )
 
 REM 4. Launch (multi-thread: watchdog + agent + guardian)
-node "%DIR%\kexvim.js" %*
+"%DIR%\node\node.exe" "%DIR%\kexvim.js" %*
