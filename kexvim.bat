@@ -16,12 +16,22 @@ where node >nul 2>nul || (
     set "PATH=%DIR%\node;%PATH%"
 )
 
-REM 2. Download kexvim.js + package.json if missing
+REM 2. Download kexvim.js if missing
 if not exist "%DIR%\kexvim.js" (
     echo [~] Downloading kexvim.js...
     mkdir "%DIR%" 2>nul
     powershell -Command "iwr '%REPO%/raw/main/kexvim.js' -OutFile '%DIR%\kexvim.js'" >nul 2>nul
+)
+
+REM 2b. Download package.json if missing
+if not exist "%DIR%\package.json" (
+    echo [~] Downloading package.json...
+    mkdir "%DIR%" 2>nul
     powershell -Command "iwr '%REPO%/raw/main/package.json' -OutFile '%DIR%\package.json'" >nul 2>nul
+)
+
+REM 2c. Download skills if missing
+if not exist "%DIR%\skills" (
     echo [~] Downloading skills...
     where git >nul 2>nul && (
         mkdir "%DIR%\skills" 2>nul
