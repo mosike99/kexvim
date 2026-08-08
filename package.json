@@ -8,11 +8,15 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "cron": "^4.4.0",
     "js-yaml": "^5.2.1",
+    "playwright": "^1.62.1",
     "ws": "^8.21.1"
+  },
+  "engines": {
+    "node": ">=22.5"
   },
   "version": "0.1.0",
   "bin": {
     "kexvim": "kexvim.js"
   },
-  "description": "Sage AI - personal AI assistant that thinks with you"
+  "description": "Kexvim - personal AI assistant that thinks with you"
 }
