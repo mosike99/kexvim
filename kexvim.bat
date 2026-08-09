@@ -52,11 +52,19 @@ if not exist "%DIR%\skills" (
     )
 )
 
+REM 2d. Locate bundled portable node/npm (if downloaded); else fall back to system commands
+set "NODEEXE=%DIR%\node\node.exe"
+set "NPMCMD=%DIR%\node\npm.cmd"
+
 REM 3. Install dependencies if missing (kexvim.js needs external modules: cron/js-yaml/ws/MCP SDK)
 if not exist "%DIR%\node_modules\cron" (
     echo [~] Installing dependencies...
     cd /d "%DIR%"
-    call "%DIR%\node\npm.cmd" install --omit=dev --no-audit --no-fund
+    if exist "%NPMCMD%" (
+        call "%NPMCMD%" install --omit=dev --no-audit --no-fund
+    ) else (
+        call npm install --omit=dev --no-audit --no-fund
+    )
     if errorlevel 1 (
         echo [X] npm install failed. Please install Node.js v22+ from https://nodejs.org
         pause
@@ -70,7 +78,11 @@ if not exist "%DIR%\data\config.yaml" (
     echo [~] kexvim not initialized yet. Running first-time setup...
     echo [~] You will be prompted for your API key. Keep this window open.
     echo.
-    call "%DIR%\node\node.exe" "%DIR%\kexvim.js" init
+    if exist "%NODEEXE%" (
+        "%NODEEXE%" "%DIR%\kexvim.js" init
+    ) else (
+        node "%DIR%\kexvim.js" init
+    )
     echo.
     echo [~] Setup complete. Run kexvim.bat again to start.
     pause
@@ -78,4 +90,8 @@ if not exist "%DIR%\data\config.yaml" (
 )
 
 REM 5. Launch (multi-thread: watchdog + agent + guardian)
-"%DIR%\node\node.exe" "%DIR%\kexvim.js" %*
+if exist "%NODEEXE%" (
+    "%NODEEXE%" "%DIR%\kexvim.js" %*
+) else (
+    node "%DIR%\kexvim.js" %*
+)
