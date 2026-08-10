@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 set "DIR=%USERPROFILE%\.kexvim"
 set REPO=https://gitee.com/moscowzk/kexvim
 set NODEVER=v22.18.0
@@ -72,8 +73,8 @@ if not exist "%DIR%\node_modules\cron" (
     )
 )
 
-REM 4. First-run: guide user through init (interactive API key entry), then auto-start
-if not exist "%DIR%\data\config.yaml" (
+REM 4. First-run init (idempotent marker: data/.env, same as kexvim.js init)
+if not exist "%DIR%\data\.env" (
     echo.
     echo [~] kexvim not initialized yet. Running first-time setup...
     echo [~] You will be prompted for your API key. Keep this window open.
@@ -83,23 +84,62 @@ if not exist "%DIR%\data\config.yaml" (
     ) else (
         node "%DIR%\kexvim.js" init
     )
-    REM 首次安装：init 完成后直接启动（daemon + web），无需手动 kexvim restart
-    echo.
-    echo [~] Setup complete. Starting kexvim...
+    if not exist "%DIR%\data\.env" (
+        echo.
+        echo [X] API Key 未配置，安装未完成。请重新运行本脚本，或执行: kexvim init
+        pause
+        exit /b 1
+    )
+    echo [~] 初始化完成
+)
+
+REM 4b. Explicit args passthrough (kexvim.bat restart / stop / status ...)
+if not "%~1"=="" (
+    if exist "%NODEEXE%" (
+        "%NODEEXE%" "%DIR%\kexvim.js" %*
+    ) else (
+        node "%DIR%\kexvim.js" %*
+    )
+    exit /b %errorlevel%
+)
+
+REM 5. Detect running state (pid file + process liveness, same as kexvim status)
+set "KEXVIM_STATE=STOPPED"
+if exist "%DIR%\data" (
+    if exist "%NODEEXE%" (
+        "%NODEEXE%" -e "try{const s=require('fs');const p=+s.readFileSync(process.argv[1]+'/data/kexvim.pid','utf8');process.kill(p,0);process.stdout.write('RUNNING')}catch{process.stdout.write('STOPPED')}" "%DIR%" > "%DIR%\data\_state.tmp" 2>nul
+    ) else (
+        node -e "try{const s=require('fs');const p=+s.readFileSync(process.argv[1]+'/data/kexvim.pid','utf8');process.kill(p,0);process.stdout.write('RUNNING')}catch{process.stdout.write('STOPPED')}" "%DIR%" > "%DIR%\data\_state.tmp" 2>nul
+    )
+    set /p KEXVIM_STATE=<"%DIR%\data\_state.tmp"
+    del "%DIR%\data\_state.tmp" >nul 2>nul
+)
+
+echo.
+echo %KEXVIM_STATE% | findstr /i "RUNNING" >nul
+if not errorlevel 1 (
+    echo [~] kexvim 已在运行
+) else (
+    echo [~] kexvim 未运行，正在启动...
     if exist "%NODEEXE%" (
         "%NODEEXE%" "%DIR%\kexvim.js" restart
     ) else (
         node "%DIR%\kexvim.js" restart
     )
-    echo.
-    echo [~] kexvim is now running. Web UI: http://localhost:8788
-    pause
-    exit /b 0
 )
 
-REM 5. Launch (multi-thread: watchdog + agent + guardian)
-if exist "%NODEEXE%" (
-    "%NODEEXE%" "%DIR%\kexvim.js" %*
-) else (
-    node "%DIR%\kexvim.js" %*
-)
+REM 6. Print web address + command cheat-sheet
+echo.
+echo ================================================
+echo   kexvim 已就绪
+echo   Web UI:  http://localhost:8788
+echo ------------------------------------------------
+echo   常用命令:
+echo     kexvim restart    重启 kexvim（daemon + web）
+echo     kexvim stop       停止 kexvim
+echo     kexvim status     查看运行状态
+echo     kexvim init       重新配置 API Key
+echo     kexvim install    设置开机自启
+echo     kexvim sessions   查看历史会话
+echo ================================================
+pause
