@@ -110,13 +110,18 @@ if not "%~1"=="" (
     exit /b %errorlevel%
 )
 
-REM 5. Detect running state (pid file + process liveness, same as kexvim status)
+REM 5. Detect running state (heartbeat freshness, same as keepalive)
+REM 2026-08-11 fix: pid file is unreliable (daemon exit hook deletes it / multi-daemon
+REM overwrites / KeepAlive only heals dev) -> use daemon.heartbeat mtime:
+REM fresh within 90s = RUNNING (same semantics as KeepAliveKexvim.heartbeatPid).
+REM Previously a missing pid file made bat always see STOPPED and run restart,
+REM killing the live daemon on every run (proven 2026-08-11).
 set "KEXVIM_STATE=STOPPED"
 if exist "%DIR%\data" (
     if exist "%NODEEXE%" (
-        "%NODEEXE%" -e "try{const s=require('fs');const p=+s.readFileSync(process.argv[1]+'/data/kexvim.pid','utf8');process.kill(p,0);process.stdout.write('RUNNING')}catch{process.stdout.write('STOPPED')}" "%DIR%" > "%DIR%\data\_state.tmp" 2>nul
+        "%NODEEXE%" -e "try{const s=require('fs');const st=s.statSync(process.argv[1]+'/data/daemon.heartbeat');if(Date.now()-st.mtimeMs<90000)process.stdout.write('RUNNING');else process.stdout.write('STOPPED')}catch{process.stdout.write('STOPPED')}" "%DIR%" > "%DIR%\data\_state.tmp" 2>nul
     ) else (
-        node -e "try{const s=require('fs');const p=+s.readFileSync(process.argv[1]+'/data/kexvim.pid','utf8');process.kill(p,0);process.stdout.write('RUNNING')}catch{process.stdout.write('STOPPED')}" "%DIR%" > "%DIR%\data\_state.tmp" 2>nul
+        node -e "try{const s=require('fs');const st=s.statSync(process.argv[1]+'/data/daemon.heartbeat');if(Date.now()-st.mtimeMs<90000)process.stdout.write('RUNNING');else process.stdout.write('STOPPED')}" "%DIR%" > "%DIR%\data\_state.tmp" 2>nul
     )
     set /p KEXVIM_STATE=<"%DIR%\data\_state.tmp"
     del "%DIR%\data\_state.tmp" >nul 2>nul
@@ -145,12 +150,12 @@ echo ================================================
 echo   kexvim 已就绪
 echo   Web UI:  http://localhost:8788
 echo ------------------------------------------------
-echo   常用命令:
-echo     kexvim restart    重启 kexvim（daemon + web）
-echo     kexvim stop       停止 kexvim
-echo     kexvim status     查看运行状态
-echo     kexvim init       重新配置 API Key
-echo     kexvim install    设置开机自启
-echo     kexvim sessions   查看历史会话
+echo   Commands:
+echo     kexvim restart    Restart kexvim (daemon + web)
+echo     kexvim stop       Stop kexvim
+echo     kexvim status     Show status
+echo     kexvim init       Configure API key
+echo     kexvim install    Auto-start on boot
+echo     kexvim sessions   List sessions
 echo ================================================
 cmd /k
