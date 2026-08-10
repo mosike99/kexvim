@@ -150,4 +150,4 @@ echo     kexvim init       重新配置 API Key
 echo     kexvim install    设置开机自启
 echo     kexvim sessions   查看历史会话
 echo ================================================
-pause
+timeout /t 15 >nul
