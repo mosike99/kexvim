@@ -72,7 +72,7 @@ if not exist "%DIR%\node_modules\cron" (
     )
 )
 
-REM 4. First-run: guide user through init (interactive API key entry)
+REM 4. First-run: guide user through init (interactive API key entry), then auto-start
 if not exist "%DIR%\data\config.yaml" (
     echo.
     echo [~] kexvim not initialized yet. Running first-time setup...
@@ -83,8 +83,16 @@ if not exist "%DIR%\data\config.yaml" (
     ) else (
         node "%DIR%\kexvim.js" init
     )
+    REM 首次安装：init 完成后直接启动（daemon + web），无需手动 kexvim restart
     echo.
-    echo [~] Setup complete. Run kexvim.bat again to start.
+    echo [~] Setup complete. Starting kexvim...
+    if exist "%NODEEXE%" (
+        "%NODEEXE%" "%DIR%\kexvim.js" restart
+    ) else (
+        node "%DIR%\kexvim.js" restart
+    )
+    echo.
+    echo [~] kexvim is now running. Web UI: http://localhost:8788
     pause
     exit /b 0
 )
