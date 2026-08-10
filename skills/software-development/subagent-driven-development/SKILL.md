@@ -1,12 +1,12 @@
 ---
 name: subagent-driven-development
-description: "Execute plans via delegate_task subagents (2-stage review)."
+description: "Execute plans via delegate_task subagents."
 version: 1.1.0
-author: Hermes Agent (adapted from obra/superpowers)
+author: Hermes Agent (adapted from obra/superpowers), ported to kexvim
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  hermes:
+  kexvim:
     tags: [delegation, subagent, implementation, workflow, parallel]
     related_skills: [writing-plans, requesting-code-review, test-driven-development]
 ---

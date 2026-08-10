@@ -1,6 +1,6 @@
 ---
 name: streaming-agent-loop
-description: Implement and debug LLM streaming agent loops with tool calling. Covers streaming SSE parsing, tool_call_id passthrough, interim text flushing, zero-chunk guard, finish_reason ordering, logical boundary splitting, and content sanitization for providers like DeepSeek, OpenAI, etc.
+description: "Debug LLM streaming agent loops with tool calling."
 tags: [streaming, tool-calling, agent-loop, sse, deepseek]
 ---
 
@@ -279,7 +279,7 @@ Both the streaming path and non-streaming path need identical sanitization. The 
 ```typescript
 const child = spawn('node', ['--import', `file://${tsxLoader}`, workerPath], {
   stdio: ['pipe', 'pipe', 'pipe'],
-  env: { ...process.env, SAGE_REVIEW_DATA: payload },
+  env: { ...process.env, KEXVIM_REVIEW_DATA: payload },
   timeout: 120_000,
 });
 child.stdout.on('data', d => stdout += d.toString());
@@ -291,7 +291,7 @@ child.on('close', () => {
 
 **Worker file** (review-worker.ts):
 ```typescript
-const payload = JSON.parse(process.env.SAGE_REVIEW_DATA || '{}');
+const payload = JSON.parse(process.env.KEXVIM_REVIEW_DATA || '{}');
 const llm = new OpenAIChatAdapter({ model, baseUrl, apiKey });
 const result = await reviewer.review(messages);
 process.stdout.write(JSON.stringify({ ok: true, summary }) + '\n');

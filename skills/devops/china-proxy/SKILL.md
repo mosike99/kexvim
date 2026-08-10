@@ -175,7 +175,7 @@ This outputs sing-box JSON outbound entries for each proxy node. Then assemble t
 
 ```bash
 nohup $GOPATH/bin/sing-box run -c /path/to/config.json > /path/to/log.log 2>&1 &
-# Or: terminal(background=true) from Hermes
+# Or: terminal(background=true) from kexvim
 
 # Verify
 ss -tlnp | grep 7890
@@ -274,7 +274,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=%h/go/bin/sing-box run -c %h/.hermes/sing-box-config.json
+ExecStart=%h/go/bin/sing-box run -c %h/data/sing-box-config.json
 Restart=on-failure
 RestartSec=5
 StartLimitIntervalSec=60

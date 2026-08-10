@@ -1,14 +1,14 @@
 ---
 name: deep-architecture-analysis
-description: "Systematic deep-read of source code to understand and document architecture — trace data flow through callbacks, identify key modules, document streaming/async patterns, and produce structured pseudocode."
+description: "Deep-read source code to document architecture and flow."
 version: 1.0.0
 author: Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  hermes:
+  kexvim:
     tags: [architecture, analysis, code-reading, reverse-engineering, documentation, streaming]
-    related_skills: [codebase-inspection, systematic-debugging, hermes-agent]
+    related_skills: [codebase-inspection, systematic-debugging, kexvim-skill-authoring]
 ---
 
 # Deep Architecture Analysis
