@@ -139,6 +139,9 @@ if not errorlevel 1 (
 REM 6. Print web address + command cheat-sheet
 echo.
 echo ================================================
+echo   安装完成。窗口保持打开，请查看上方日志确认
+echo   「kexvim 已就绪 / Web UI: 8788」后手动关闭本窗口
+echo ================================================
 echo   kexvim 已就绪
 echo   Web UI:  http://localhost:8788
 echo ------------------------------------------------
@@ -150,4 +153,4 @@ echo     kexvim init       重新配置 API Key
 echo     kexvim install    设置开机自启
 echo     kexvim sessions   查看历史会话
 echo ================================================
-timeout /t 15 >nul
+cmd /k
