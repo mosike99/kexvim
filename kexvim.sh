@@ -64,16 +64,23 @@ NPMCMD=npm
     mkdir -p "$DIR"
     curl -fsSL "$REPO/raw/main/package.json" -o "$DIR/package.json" || { echo "[X] package.json download failed"; exit 1; }
 }
-[ -d "$DIR/skills" ] || {
-    echo "[~] Downloading skills..."
+# 2c. Install preinstalled marketplace skills (kexvim-market-skills default-skills.txt -> data/skills/market)
+if [ ! -d "$DIR/data/skills/market" ]; then
+    echo "[~] Installing preinstalled skills..."
     if command -v git >/dev/null 2>&1; then
-        mkdir -p "$DIR/skills"
+        mkdir -p "$DIR/data/skills/market"
         tmp=$(mktemp -d)
-        git clone --depth 1 "$REPO.git" "$tmp" --single-branch >/dev/null 2>&1
-        [ -d "$tmp/skills" ] && cp -r "$tmp/skills/." "$DIR/skills/"
+        git clone --depth 1 "https://gitee.com/moscowzk/kexvim-market-skills.git" "$tmp" --single-branch >/dev/null 2>&1
+        if [ -f "$tmp/default-skills.txt" ]; then
+            while IFS= read -r s; do
+                [ -z "$s" ] && continue
+                case "$s" in \#*) continue;; esac
+                [ -d "$tmp/skills/$s" ] && cp -r "$tmp/skills/$s" "$DIR/data/skills/market/"
+            done < "$tmp/default-skills.txt"
+        fi
         rm -rf "$tmp"
     fi
-}
+fi
 
 # ---------- 3. 安装依赖（缺失时，kexvim.js 需要 cron/js-yaml/ws/MCP SDK） ----------
 if [ ! -d "$DIR/node_modules/cron" ]; then
