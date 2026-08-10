@@ -97,6 +97,11 @@ if not exist "%DIR%\data\.env" (
         exit /b 1
     )
     echo [~] 初始化完成
+    echo.
+    echo ================================================
+    echo   安装完成。窗口保持打开，请查看上方日志确认
+    echo   「kexvim 已就绪 / Web UI: 8788」后手动关闭本窗口
+    echo ================================================
 )
 
 REM 4b. Explicit args passthrough (kexvim.bat restart / stop / status ...)
@@ -145,23 +150,21 @@ if not errorlevel 1 (
     ) else (
         node "%DIR%\kexvim.js" restart
     )
+    echo.
+    echo   kexvim 已启动
+    echo   Web UI:  http://localhost:8788
+    echo ------------------------------------------------
+    echo   Commands:
+    echo     kexvim restart    Restart kexvim (daemon + web)
+    echo     kexvim stop       Stop kexvim
+    echo     kexvim status     Show status
+    echo     kexvim init       Configure API key
+    echo     kexvim install    Auto-start on boot
+    echo     kexvim sessions   List sessions
+    echo ================================================
 )
 
-REM 6. Print web address + command cheat-sheet
-echo.
-echo ================================================
-echo   安装完成。窗口保持打开，请查看上方日志确认
-echo   「kexvim 已就绪 / Web UI: 8788」后手动关闭本窗口
-echo ================================================
-echo   kexvim 已就绪
-echo   Web UI:  http://localhost:8788
-echo ------------------------------------------------
-echo   Commands:
-echo     kexvim restart    Restart kexvim (daemon + web)
-echo     kexvim stop       Stop kexvim
-echo     kexvim status     Show status
-echo     kexvim init       Configure API key
-echo     kexvim install    Auto-start on boot
-echo     kexvim sessions   List sessions
-echo ================================================
-cmd /k
+REM Window stays open (timeout loops even when stdin is broken)
+:keep
+timeout /t 10 >nul 2>nul
+goto keep
