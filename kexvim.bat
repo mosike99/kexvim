@@ -79,6 +79,11 @@ if not exist "%DIR%\data\.env" (
     echo [~] kexvim not initialized yet. Running first-time setup...
     echo [~] You will be prompted for your API key. Keep this window open.
     echo.
+    REM 必须先 cd 到安装目录：kexvim.js init 按 cwd 回溯找项目根（data 定位规则），
+    REM 不 cd 会解析到 bat 所在目录（如 D:\kexvim）→ 配置写错位置（2026-08-10 实锤 cwd 漂移）。
+    REM cd to the install dir first: kexvim.js resolves data by walking up from cwd,
+    REM so a bare double-click would write config next to the bat (cwd drift, proven).
+    cd /d "%DIR%"
     if exist "%NODEEXE%" (
         "%NODEEXE%" "%DIR%\kexvim.js" init
     ) else (
@@ -95,6 +100,7 @@ if not exist "%DIR%\data\.env" (
 
 REM 4b. Explicit args passthrough (kexvim.bat restart / stop / status ...)
 if not "%~1"=="" (
+    cd /d "%DIR%"
     if exist "%NODEEXE%" (
         "%NODEEXE%" "%DIR%\kexvim.js" %*
     ) else (
@@ -121,6 +127,7 @@ if not errorlevel 1 (
     echo [~] kexvim 已在运行
 ) else (
     echo [~] kexvim 未运行，正在启动...
+    cd /d "%DIR%"
     if exist "%NODEEXE%" (
         "%NODEEXE%" "%DIR%\kexvim.js" restart
     ) else (
