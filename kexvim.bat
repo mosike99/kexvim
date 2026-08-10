@@ -1,5 +1,6 @@
 @echo off
 chcp 65001 >nul
+set NODE_NO_WARNINGS=1
 set "DIR=%USERPROFILE%\.kexvim"
 set REPO=https://gitee.com/moscowzk/kexvim
 set NODEVER=v22.18.0
