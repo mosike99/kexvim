@@ -3984,8 +3984,10 @@ platform:
 `;function fl(l){let e=process.platform==="win32",t=ee.join(l,e?"kexvim.cmd":"kexvim");j.existsSync(t)||(e?j.writeFileSync(t,`@echo off\r
 if exist "%~dp0dist\\dev.mjs" (\r
   node "%~dp0dist\\dev.mjs" %*\r
-) else (\r
+) else if exist "%~dp0dist\\kexvim.mjs" (\r
   node "%~dp0dist\\kexvim.mjs" %*\r
+) else (\r
+  node "%~dp0kexvim.js" %*\r
 )\r
 `):(j.writeFileSync(t,`#!/bin/sh
 exec node "$(dirname "$0")/kexvim.js" "$@"
