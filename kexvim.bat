@@ -126,6 +126,12 @@ if exist "%DIR%\data" (
     set /p KEXVIM_STATE=<"%DIR%\data\_state.tmp"
     del "%DIR%\data\_state.tmp" >nul 2>nul
 )
+REM Backup: heartbeat not RUNNING -> also check daemon process (kexvim.js --daemon, exclude dev.mjs)
+REM Process alive = RUNNING; never kill a live daemon (idempotent double-click)
+if not "%KEXVIM_STATE%"=="RUNNING" (
+    wmic process where "name='node.exe'" get commandline 2>nul | findstr /i /c:"kexvim.js --daemon" | findstr /v /c:"dev.mjs" >nul 2>nul
+    if not errorlevel 1 set "KEXVIM_STATE=RUNNING"
+)
 
 echo.
 echo %KEXVIM_STATE% | findstr /i "RUNNING" >nul
