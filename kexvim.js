@@ -9194,11 +9194,11 @@ var PromptBuilder = class _PromptBuilder {
     const PATH_TOOLS = /* @__PURE__ */ new Set(["read_file", "write_file", "patch", "search_files"]);
     const pathIsCode = (path58) => {
       const normalized = path58.replace(/\\/g, "/");
-      const basename7 = normalized.slice(normalized.lastIndexOf("/") + 1).toLowerCase();
-      if (CODE_BASENAMES.has(basename7)) return true;
-      const dotIdx = basename7.lastIndexOf(".");
-      if (dotIdx === -1 || dotIdx === basename7.length - 1) return false;
-      return CODE_EXTENSIONS.has(basename7.slice(dotIdx + 1));
+      const basename8 = normalized.slice(normalized.lastIndexOf("/") + 1).toLowerCase();
+      if (CODE_BASENAMES.has(basename8)) return true;
+      const dotIdx = basename8.lastIndexOf(".");
+      if (dotIdx === -1 || dotIdx === basename8.length - 1) return false;
+      return CODE_EXTENSIONS.has(basename8.slice(dotIdx + 1));
     };
     const recent = messages.slice(-window2);
     for (const m of recent) {
@@ -39412,17 +39412,20 @@ async function releaseKexvim(projectRoot) {
 // src/CliHandler.ts
 var CliHandler = class _CliHandler {
   /**
-   * 命令进程独立解析 data 目录（不依赖 config 加载）：
-   * KEXVIM_USER_DATA_DIR || <项目根>/data
+   * 从入口文件推导安装根（homeDir）：
+   * dist/dev.mjs → dist 的上级（dev 仓根）；kexvim.js → 所在目录（正式版安装目录）。
+   * 安装管理命令（init/update/restart/stop/...）的 homeDir 用此推导，不随 cwd 漂移——
+   * 全局 `kexvim XXX` 在任意目录跑，操作的是安装位置而非 cwd 项目根
+   * （2026-08-12 修复：项目目录内跑 kexvim update 曾误报"未安装"）。
+   * Install root derived from the entry file: dist/dev.mjs → parent of dist;
+   * kexvim.js → its own directory. Install-management commands use this so a
+   * global `kexvim update` from any cwd updates the install, not the cwd root.
    */
-  static resolveUserDataDir() {
-    const envDir = process.env["KEXVIM_USER_DATA_DIR"];
-    if (envDir) return envDir;
-    const root = KexvimConfigLoader.findProjectRoot() ?? KexvimConfigLoader.findProjectRoot(path56.dirname(process.argv[1] ?? ""));
-    if (!root) {
-      throw new Error("[kexvim] \u627E\u4E0D\u5230\u9879\u76EE\u6839\uFF1A\u8BF7\u5728 kexvim \u9879\u76EE\u76EE\u5F55\u5185\u8FD0\u884C\uFF0C\u6216\u8BBE\u7F6E KEXVIM_USER_DATA_DIR");
-    }
-    return path56.join(root, "data");
+  static resolveInstallHome() {
+    const entry = path56.resolve(process.argv[1] ?? "");
+    let dir = path56.dirname(entry);
+    if (path56.basename(dir) === "dist") dir = path56.dirname(dir);
+    return dir;
   }
   /**
    * Main 入口分派：第一个参数命中命令集 → 执行命令并返回 true；
@@ -39461,7 +39464,7 @@ var CliHandler = class _CliHandler {
    * 分派到 src/commands/ 下的命令实现。
    */
   static async handleCliCommand(cmd, userDataDir) {
-    const homeDir = path56.resolve(userDataDir ?? _CliHandler.resolveUserDataDir(), "..");
+    const homeDir = userDataDir ? path56.resolve(userDataDir, "..") : process.env["KEXVIM_USER_DATA_DIR"] ? path56.resolve(process.env["KEXVIM_USER_DATA_DIR"], "..") : _CliHandler.resolveInstallHome();
     const dataDir = path56.join(homeDir, "data");
     const repoUrl = "https://gitee.com/moscowzk/kexvim";
     switch (cmd) {
