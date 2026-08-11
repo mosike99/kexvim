@@ -9002,8 +9002,15 @@ asking them to repeat themselves.`;
    * Coding workflow guidance (injected when codingGuidance is true)
    *
    * 面向"用户用 kexvim 编程"场景的行为准则：先读后改、精准编辑、
-   * 改完必验、查证不猜、如实报告。与 Coding Workspace Block 并列，
-   * 有 .git 编程上下文时注入（对齐 pi edit.ts promptGuidelines）。
+   * 改完必验、查证不猜、如实报告 + 通用编程开发约定（确认性编程、
+   * DRY、精准修复等，2026-08-12 从 dev AGENTS.md 代码质量节迁移——
+   * 编程哲学从"改 kexvim 源码时生效"升级为"一切编程会话生效"，
+   * dev/release 产物一致；AGENTS.md 只留项目特有规则）。
+   * Coding behavior for any programming session: read-before-edit, precise
+   * edits, verify-after-change, check-don't-guess, plus the general coding
+   * conventions migrated from dev AGENTS.md (2026-08-12): certainty over
+   * defensiveness, DRY, precise fixes over rewrites — now active in every
+   * coding session, dev and release alike.
    */
   static CODING_GUIDANCE = `# Coding workflow
 When working on code, follow this workflow:
@@ -9019,7 +9026,17 @@ When working on code, follow this workflow:
   instead of inventing signatures from memory.
 - Keep changes scoped: only touch what the task requires; don't refactor
   unrelated code along the way.
-- Show file paths clearly when working with files.`;
+- Show file paths clearly when working with files.
+- Certainty over defensiveness: branches that should never be reached throw
+  and let the error surface naturally \u2014 never swallow errors with defensive
+  branches that mask an upstream bug.
+- DRY: extract shared logic into a common method or class at the second
+  occurrence \u2014 never copy-paste.
+- Don't keep backward compatibility unless the user explicitly asks.
+- Inline single-use one-line helper functions.
+- For type errors caused by outdated dependencies, upgrade the dependency \u2014
+  never downgrade the code.
+- Ask the user before deleting code that looks intentional.`;
   /**
    * 编程模式定位句（detectCodingMode 命中时注入，对齐 pi system-prompt.ts
    * "expert coding assistant" 定位）/ Coding-mode opening line (injected when
