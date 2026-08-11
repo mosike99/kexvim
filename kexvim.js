@@ -8168,7 +8168,18 @@ ${err.message}` : err.message,
           signal: null
         });
       });
+      let exitTimer;
+      child.on("exit", (code, signal) => {
+        if (settled) return;
+        exitTimer = setTimeout(() => {
+          if (timer) clearTimeout(timer);
+          const overflowNote = bufferOverflow ? `
+[CommandRunner] Output exceeded ${maxBuffer} bytes \u2014 process tree killed.` : "";
+          settle({ code: timedOut ? null : code, stdout, stderr: stderr + overflowNote, timedOut, signal });
+        }, 5e3);
+      });
       child.on("close", (code, signal) => {
+        if (exitTimer) clearTimeout(exitTimer);
         if (timer) clearTimeout(timer);
         const overflowNote = bufferOverflow ? `
 [CommandRunner] Output exceeded ${maxBuffer} bytes \u2014 process tree killed.` : "";
