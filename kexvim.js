@@ -23692,7 +23692,7 @@ var AgentRuntime = class _AgentRuntime extends AgentLoopMixin(ToolLoopMixin(Stee
    * the system prompt changes at most once, keeping the prompt-cache prefix
    * stable across rapid chat↔coding switches.
    */
-  _codingMode = false;
+  _codingMode = true;
   static TASK_SUMMARY_BATCH = 5;
   /** 末批兜底延迟：任务流结束后 N 毫秒生成剩余摘要（不足 BATCH 的尾部节点不再永久悬空）/ Tail-batch fallback delay */
   static SUMMARY_FLUSH_DELAY_MS = 5e3;
@@ -24073,7 +24073,7 @@ ${context}` : ""}`;
       }
       const isNewSession = await s.ensureSession(opts);
       if (isNewSession) {
-        s._codingMode = opts?.sessionType === "\u4EE3\u7801\u5F00\u53D1";
+        s._codingMode = true;
       }
       s._userTurnCount++;
       const msgList = s.messages;
