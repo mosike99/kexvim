@@ -5025,6 +5025,7 @@ CREATE TABLE IF NOT EXISTS sessions (
   summary_created_at REAL DEFAULT 0,
   session_key   TEXT DEFAULT '',
   is_test       INTEGER NOT NULL DEFAULT 0,
+  mode          TEXT DEFAULT '',
   created_at    REAL NOT NULL,
   updated_at    REAL NOT NULL,
   last_activity REAL NOT NULL
@@ -5314,6 +5315,15 @@ var SQLiteSessionStore = class {
     } catch {
     }
     try {
+      this.db.exec("ALTER TABLE sessions ADD COLUMN mode TEXT DEFAULT ''");
+    } catch {
+    }
+    try {
+      const n = this.db.prepare("UPDATE sessions SET mode='coding' WHERE mode IS NULL OR mode=''").run();
+      if (n.changes > 0) console.log(`[SessionStore] mode migration: ${n.changes} session(s) patched to coding`);
+    } catch {
+    }
+    try {
       this.db.exec("ALTER TABLE task_nodes ADD COLUMN last_child_id INTEGER");
     } catch {
     }
@@ -5385,8 +5395,8 @@ var SQLiteSessionStore = class {
   async create(session) {
     const stmt = this.db.prepare(`
       INSERT INTO sessions (id, profile, source, chat_id, chat_type, user_id, thread_id,
-        state_json, summary, summary_created_at, session_key, is_test, created_at, updated_at, last_activity)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        state_json, summary, summary_created_at, session_key, is_test, mode, created_at, updated_at, last_activity)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     stmt.run(
       session.id,
@@ -5401,6 +5411,7 @@ var SQLiteSessionStore = class {
       session.summaryCreatedAt ?? 0,
       session.sessionKey ?? "",
       session.isTest ? 1 : 0,
+      session.mode ?? "chat",
       session.createdAt,
       session.updatedAt,
       session.lastActivity
@@ -5428,7 +5439,8 @@ var SQLiteSessionStore = class {
       sessionKey: "session_key",
       updatedAt: "updated_at",
       threadId: "thread_id",
-      userId: "user_id"
+      userId: "user_id",
+      mode: "mode"
     };
     for (const [key, col] of Object.entries(fieldMap)) {
       if (key in update) {
@@ -6186,6 +6198,7 @@ ${row.content ?? ""}`;
       summaryCreatedAt: row.summary_created_at,
       sessionKey: row.session_key,
       isTest: row.is_test ? Number(row.is_test) === 1 : void 0,
+      mode: row.mode || void 0,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       lastActivity: row.last_activity
@@ -8768,7 +8781,24 @@ function firstThreatMessage(content, scope = "strict") {
 }
 
 // src/inference/PromptBuilder.ts
-var PromptDefaults = class {
+var AGENT_MODES = ["chat", "coding", "research", "writing", "analysis", "ops"];
+function sessionTypeToMode(sessionType) {
+  switch (sessionType) {
+    case "\u4EE3\u7801\u5F00\u53D1":
+      return "coding";
+    // 未来 web 选项：'联网研究' → research、'文档写作' → writing、
+    // '数据分析' → analysis、'系统运维' → ops
+    default:
+      return "chat";
+  }
+}
+function normalizeMode(mode) {
+  if (mode && AGENT_MODES.includes(mode)) {
+    return mode;
+  }
+  return "chat";
+}
+var PromptDefaults = class _PromptDefaults {
   /**
    * 默认 Agent 身份 / Default agent identity
    */
@@ -9049,6 +9079,37 @@ When working on code, follow this workflow:
   never downgrade the code.
 - Ask the user before deleting code that looks intentional.`;
   /**
+   * 研究模式引导 / Research-mode guidance (multi-source research)
+   */
+  static RESEARCH_GUIDANCE = `# Research mode
+You are helping the user with research: finding, cross-verifying and
+synthesizing information. Prefer multi-source verification (web_search /
+web_fetch) over single sources; cite sources; distinguish facts from
+inference; deliver structured findings with a clear conclusion.`;
+  /**
+   * 写作模式引导 / Writing-mode guidance (reports, documents, copy)
+   */
+  static WRITING_GUIDANCE = `# Writing mode
+You are helping the user write: reports, documents, copy, messages.
+Structure first (outline \u2192 sections), match the audience, prefer clear
+Chinese prose, use markdown conventions, avoid AI-sounding filler.`;
+  /**
+   * 数据分析模式引导 / Analysis-mode guidance (data crunching, stats, charts)
+   */
+  static ANALYSIS_GUIDANCE = `# Analysis mode
+You are helping the user analyze data: crunching numbers, statistics,
+charts. Use execute_code for computation; be rigorous about sample sizes
+and metric definitions; lead with the conclusion, then evidence and
+visualization.`;
+  /**
+   * 运维模式引导 / Ops-mode guidance (systems, processes, logs, cron)
+   */
+  static OPS_GUIDANCE = `# Ops mode
+You are helping the user operate and maintain systems: processes, cron
+jobs, logs, servers. Use terminal/CommandRunner; investigate before
+acting (evidence from logs); dangerous commands go through approval;
+report what actually happened.`;
+  /**
    * 编程模式定位句（detectCodingMode 命中时注入，对齐 pi system-prompt.ts
    * "expert coding assistant" 定位）/ Coding-mode opening line (injected when
    * detectCodingMode hits; aligned with pi's expert-coding-assistant framing)
@@ -9057,6 +9118,22 @@ When working on code, follow this workflow:
 You are helping the user with programming: reading files, executing commands,
 editing code, and writing new files. Use the coding tools (read_file,
 write_file, patch, terminal, search_files) for all file and code work.`;
+  /**
+   * 模式 → 定位句映射（chat 无）/ Mode → opening line map ('chat' has none)
+   */
+  static MODE_OPENINGS = {
+    coding: _PromptDefaults.CODING_MODE_PROMPT
+  };
+  /**
+   * 模式 → 行为准则映射（chat 无）/ Mode → behavior-guidance map ('chat' has none)
+   */
+  static MODE_GUIDANCES = {
+    coding: _PromptDefaults.CODING_GUIDANCE,
+    research: _PromptDefaults.RESEARCH_GUIDANCE,
+    writing: _PromptDefaults.WRITING_GUIDANCE,
+    analysis: _PromptDefaults.ANALYSIS_GUIDANCE,
+    ops: _PromptDefaults.OPS_GUIDANCE
+  };
   /**
    * 中途用户引导 / Mid-turn steer guidance
    *
@@ -9343,13 +9420,14 @@ var PromptBuilder = class _PromptBuilder {
         parts.push(envSection);
       }
     }
-    if (options.codingModePrompt) {
-      parts.push(options.codingModePrompt);
+    const mode = options.mode ?? "chat";
+    if (mode !== "chat") {
+      const opening = PromptDefaults.MODE_OPENINGS[mode];
+      if (opening) parts.push(opening);
+      const guidance = PromptDefaults.MODE_GUIDANCES[mode];
+      if (guidance) parts.push(guidance);
     }
-    if (options.codingGuidance) {
-      parts.push(PromptDefaults.CODING_GUIDANCE);
-    }
-    if (options.codingGuidance) {
+    if (mode === "coding") {
       const workspaceBlock = _PromptBuilder.buildCodingWorkspaceBlock();
       if (workspaceBlock) {
         parts.push(workspaceBlock);
@@ -10300,6 +10378,8 @@ function SessionMixin(Base) {
         summary: opts?.title || "",
         // 新建会话标题（web 话题条选择/输入，持久化供列表显示）
         isTest: opts?.isTest,
+        mode: sessionTypeToMode(opts?.sessionType),
+        // web 新建会话选「代码开发」→ coding，默认 chat
         createdAt: now,
         updatedAt: now,
         lastActivity: now
@@ -23703,7 +23783,7 @@ var AgentRuntime = class _AgentRuntime extends AgentLoopMixin(ToolLoopMixin(Stee
    * the system prompt changes at most once, keeping the prompt-cache prefix
    * stable across rapid chat↔coding switches.
    */
-  _codingMode = false;
+  _mode = "chat";
   static TASK_SUMMARY_BATCH = 5;
   /** 末批兜底延迟：任务流结束后 N 毫秒生成剩余摘要（不足 BATCH 的尾部节点不再永久悬空）/ Tail-batch fallback delay */
   static SUMMARY_FLUSH_DELAY_MS = 5e3;
@@ -24083,7 +24163,7 @@ ${context}` : ""}`;
         s.memoryManager.onTurnStart(s.messages.length + 1, input);
       }
       const isNewSession = await s.ensureSession(opts);
-      s._codingMode = true;
+      s._mode = normalizeMode(s.session?.mode);
       s._userTurnCount++;
       const msgList = s.messages;
       if (s._autoResetReason) {
@@ -24221,12 +24301,18 @@ ${context}` : ""}`;
       const skills = this.skillManager.list().filter((s) => s.state === "active");
       skillsPrompt = PromptBuilder.buildSkillsPrompt(skills);
     }
-    if (!this._codingMode) {
-      this._codingMode = PromptBuilder.detectCodingMode(
-        this.messages
-      );
+    if (this._mode === "chat") {
+      const detected = PromptBuilder.detectCodingMode(this.messages);
+      if (detected) {
+        this._mode = "coding";
+        if (this.sessionStore && this.session && !this.session.mode) {
+          this.session.mode = "coding";
+          this.sessionStore.update({ id: this.session.id, mode: "coding" }).catch(() => {
+          });
+        }
+      }
     }
-    const codingMode = this._codingMode;
+    const mode = this._mode;
     const builder = new PromptBuilder();
     const projectContext = PromptBuilder.loadProjectContext(process.cwd());
     return builder.build({
@@ -24240,8 +24326,7 @@ ${context}` : ""}`;
       memoryGuidance: true,
       skillsGuidance: true,
       steerGuidance: true,
-      codingGuidance: codingMode,
-      codingModePrompt: codingMode ? PromptDefaults.CODING_MODE_PROMPT : void 0,
+      mode,
       sessionSearchGuidance: true,
       validToolNames: this._tools.names(),
       activeProfile: "default",
