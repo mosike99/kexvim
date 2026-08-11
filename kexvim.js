@@ -38829,7 +38829,15 @@ function hasTool2(tool) {
   );
   return result.code === 0;
 }
-var UPDATE_FILES = ["kexvim.js", "AGENTS.md"];
+var UPDATE_FILES = [
+  "kexvim.js",
+  "AGENTS.md",
+  "kexvim.bat",
+  "kexvim.sh",
+  "LICENSE",
+  "README.md",
+  "package.json"
+];
 async function updateKexvim(homeDir, repoUrl) {
   const exists = (p) => {
     try {
@@ -38866,6 +38874,15 @@ async function updateKexvim(homeDir, repoUrl) {
         process.exit(1);
       }
       fs51.rmSync(tmp, { force: true });
+    }
+    const depOk = CommandRunner.runSyncResult("npm ls --depth=0", { cwd: homeDir, timeoutMs: 6e4 });
+    if (depOk.code !== 0) {
+      console.log("[~] \u4F9D\u8D56\u53D8\u66F4\uFF0C\u6267\u884C npm install...");
+      const inst = CommandRunner.runSyncResult("npm install", { cwd: homeDir, timeoutMs: 3e5 });
+      if (inst.code !== 0) {
+        console.error("[\u2717] npm install \u5931\u8D25\uFF0C\u8BF7\u624B\u52A8\u5728\u5B89\u88C5\u76EE\u5F55\u6267\u884C npm install");
+        process.exit(1);
+      }
     }
   }
   console.log("[\u2713] \u66F4\u65B0\u5B8C\u6210\uFF0C\u6B63\u5728\u91CD\u542F...");
