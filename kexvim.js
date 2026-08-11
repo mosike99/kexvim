@@ -38829,6 +38829,7 @@ function hasTool2(tool) {
   );
   return result.code === 0;
 }
+var UPDATE_FILES = ["kexvim.js", "AGENTS.md"];
 async function updateKexvim(homeDir, repoUrl) {
   const exists = (p) => {
     try {
@@ -38851,18 +38852,19 @@ async function updateKexvim(homeDir, repoUrl) {
       process.exit(1);
     }
   } else {
-    console.log("[~] \u4E0B\u8F7D\u6700\u65B0 kexvim.js...");
-    const tmp = path48.join(os11.tmpdir(), "kexvim-update.js");
-    try {
-      const url = `${repoUrl}/raw/main/kexvim.js`;
-      if (hasTool2("wget")) CommandRunner.runFileSync("wget", ["-q", "-O", tmp, url], { timeoutMs: 6e4 });
-      else CommandRunner.runFileSync("curl", ["-fsSL", "-o", tmp, url], { timeoutMs: 6e4 });
-    } catch {
-      console.error("[\u2717] \u4E0B\u8F7D\u5931\u8D25");
-      process.exit(1);
-    }
-    if (exists(tmp)) {
-      fs51.copyFileSync(tmp, path48.join(homeDir, "kexvim.js"));
+    console.log("[~] \u4E0B\u8F7D\u6700\u65B0\u53D1\u5E03\u6587\u4EF6...");
+    for (const file of UPDATE_FILES) {
+      const tmp = path48.join(os11.tmpdir(), `kexvim-update-${file}`);
+      try {
+        const url = `${repoUrl}/raw/main/${file}`;
+        if (hasTool2("wget")) CommandRunner.runFileSync("wget", ["-q", "-O", tmp, url], { timeoutMs: 6e4 });
+        else CommandRunner.runFileSync("curl", ["-fsSL", "-o", tmp, url], { timeoutMs: 6e4 });
+        fs51.copyFileSync(tmp, path48.join(homeDir, file));
+        console.log(`[\u2713] ${file}`);
+      } catch {
+        console.error(`[\u2717] ${file} \u4E0B\u8F7D\u5931\u8D25`);
+        process.exit(1);
+      }
       fs51.rmSync(tmp, { force: true });
     }
   }
