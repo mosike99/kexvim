@@ -12413,6 +12413,141 @@ var ContextCompressor = class _ContextCompressor {
   }
 };
 
+// packages/common/src/JsonSchemaValidator.ts
+var JsonSchemaValidator = class _JsonSchemaValidator {
+  /**
+   * 校验值 / Validate a value
+   * @param value - 待校验值 / Value to validate
+   * @param schema - JSON Schema / The schema
+   * @param path - 当前路径（错误信息定位用）/ Current path (for error messages)
+   * @returns 错误描述，通过返回 null / Error string, or null when valid
+   */
+  static validate(value, schema, path58 = "$") {
+    if (schema == null || typeof schema !== "object") return null;
+    const type2 = schema["type"];
+    if (typeof type2 === "string") {
+      const err = _JsonSchemaValidator._checkType(value, type2, path58);
+      if (err) return err;
+    }
+    if (Array.isArray(schema["enum"])) {
+      const allowed = schema["enum"];
+      if (!allowed.some((a) => _JsonSchemaValidator._deepEqual(a, value))) {
+        return `${path58}: must be one of ${JSON.stringify(allowed)}`;
+      }
+    }
+    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+      const required = schema["required"];
+      if (Array.isArray(required)) {
+        for (const key of required) {
+          if (!(key in value)) {
+            return `${path58}: missing required property "${key}"`;
+          }
+        }
+      }
+      const props = schema["properties"];
+      if (props && typeof props === "object") {
+        for (const [key, subSchema] of Object.entries(props)) {
+          if (key in value) {
+            const subErr = _JsonSchemaValidator.validate(value[key], subSchema, `${path58}.${key}`);
+            if (subErr) return subErr;
+          }
+        }
+      }
+      if (schema["additionalProperties"] === false && props && typeof props === "object") {
+        for (const key of Object.keys(value)) {
+          if (!(key in props)) {
+            return `${path58}: unexpected property "${key}"`;
+          }
+        }
+      }
+    }
+    if (Array.isArray(value)) {
+      const items = schema["items"];
+      if (items && typeof items === "object") {
+        for (let i = 0; i < value.length; i++) {
+          const subErr = _JsonSchemaValidator.validate(value[i], items, `${path58}[${i}]`);
+          if (subErr) return subErr;
+        }
+      }
+    }
+    if (typeof value === "number") {
+      const min = schema["minimum"];
+      if (typeof min === "number" && value < min) return `${path58}: must be >= ${min}`;
+      const max = schema["maximum"];
+      if (typeof max === "number" && value > max) return `${path58}: must be <= ${max}`;
+    }
+    if (typeof value === "string") {
+      const minLen = schema["minLength"];
+      if (typeof minLen === "number" && value.length < minLen) return `${path58}: must be at least ${minLen} chars`;
+      const maxLen = schema["maxLength"];
+      if (typeof maxLen === "number" && value.length > maxLen) return `${path58}: must be at most ${maxLen} chars`;
+      const pattern = schema["pattern"];
+      if (typeof pattern === "string") {
+        try {
+          if (!new RegExp(pattern).test(value)) return `${path58}: must match pattern ${pattern}`;
+        } catch {
+        }
+      }
+    }
+    return null;
+  }
+  /** 类型检查 / Type check */
+  static _checkType(value, type2, path58) {
+    const actual = this._typeName(value);
+    if (type2 === "integer") {
+      if (typeof value !== "number" || !Number.isInteger(value)) {
+        return `${path58}: expected integer, got ${actual}`;
+      }
+      return null;
+    }
+    if (type2 === "number") {
+      if (typeof value !== "number") return `${path58}: expected number, got ${actual}`;
+      return null;
+    }
+    if (type2 === "string" && typeof value !== "string") return `${path58}: expected string, got ${actual}`;
+    if (type2 === "boolean" && typeof value !== "boolean") return `${path58}: expected boolean, got ${actual}`;
+    if (type2 === "array" && !Array.isArray(value)) return `${path58}: expected array, got ${actual}`;
+    if (type2 === "object" && (typeof value !== "object" || value === null || Array.isArray(value))) {
+      return `${path58}: expected object, got ${actual}`;
+    }
+    if (type2 === "null" && value !== null) return `${path58}: expected null, got ${actual}`;
+    return null;
+  }
+  /** 值的类型名（错误信息用）/ Human-readable type name */
+  static _typeName(value) {
+    if (value === null) return "null";
+    if (Array.isArray(value)) return "array";
+    if (typeof value === "number") return Number.isInteger(value) ? "integer" : "number";
+    return typeof value;
+  }
+  /** 深度相等（enum 用）/ Deep equality (for enum) */
+  static _deepEqual(a, b) {
+    if (a === b) return true;
+    if (typeof a !== "object" || typeof b !== "object" || a === null || b === null) return false;
+    const aArr = Array.isArray(a);
+    const bArr = Array.isArray(b);
+    if (aArr !== bArr) return false;
+    if (aArr) {
+      const a2 = a;
+      const b2 = b;
+      if (a2.length !== b2.length) return false;
+      for (let i = 0; i < a2.length; i++) {
+        if (!_JsonSchemaValidator._deepEqual(a2[i], b2[i])) return false;
+      }
+      return true;
+    }
+    const aObj = a;
+    const bObj = b;
+    const aKeys = Object.keys(aObj);
+    const bKeys = Object.keys(bObj);
+    if (aKeys.length !== bKeys.length) return false;
+    for (const k of aKeys) {
+      if (!(k in bObj) || !_JsonSchemaValidator._deepEqual(aObj[k], bObj[k])) return false;
+    }
+    return true;
+  }
+};
+
 // src/tool/AutoValidate.ts
 import * as fs10 from "node:fs";
 import * as path11 from "node:path";
@@ -13190,6 +13325,17 @@ function ToolLoopMixin(Base) {
             break;
           }
           messages.push({ role: "tool", tool_call_id: String(tc.id || tc.callId || name), content });
+          continue;
+        }
+        const validationError = JsonSchemaValidator.validate(args, handler.parameters);
+        if (validationError) {
+          const callId = String(tc.id || tc.callId || name);
+          const content = `Error: invalid arguments for '${name}': ${validationError}. Re-issue the tool call with correct arguments.`;
+          messages.push({ role: "tool", tool_call_id: callId, content });
+          try {
+            await this.persistMessage("tool", content);
+          } catch {
+          }
           continue;
         }
         toolNameErrors = 0;
