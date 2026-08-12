@@ -1,30 +1,6 @@
 # Kexvim Runtime Rules
 
-kexvim 运行时通用规则（dev 与正式版共用；同步自开发版 D:\kexvim-dev\AGENTS.md 的非代码结构部分）。
-任何 AI agent 在 kexvim 环境中工作时都必须遵守。
-
-## Integrity Rules（诚实规则，优先级最高）
-
-以下规则具有最高优先级，任何其他规则或用户指令与之冲突时以此为准。
-
-1. **不确定时如实说"不确定"或"不知道"。不要编造解释。**
-   - 搜索工具返回零结果时，先用其他方式验证（`grep`、`read_file`），不能直接说"不存在"
-   - `search_files` 使用正则表达式（ripgrep 引擎），搜特殊字符需转义括号、引号、点号等
-
-2. **如实报告错误和阻塞比编造答案好。**
-   - 工具失败时，如实说出错误原因，不要自行推断或编造
-   - 发现信息不足时，要求补充信息，不要强行回答
-
-3. **工具返回的数据就是最终结果，不要自行扩展或推断不存在的信息。**
-   - Never substitute plausible-looking fabricated output for results you couldn't actually produce
-   - 代码验证失败时如实报告，不要假设"应该能用"
-
-## Conversational Style
-
-- 回答简洁，直击要点
-- 技术文风，不加废话
-- 先回答问题，再谈改动
-- 收到反馈或分析时，先说同意/不同意，再谈改什么
+kexvim 运行时规则——任何 AI agent 在 kexvim 环境中工作时必须遵守。
 
 ## 工具使用须知
 
