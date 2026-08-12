@@ -31,8 +31,8 @@ Kexvim 是一个运行在你本地设备上的 AI Agent 框架：既能像智能
 ### Linux / macOS
 
 ```bash
-curl -fsSL https://gitee.com/moscowzk/kexvim/raw/main/kexvim.sh -o kexvim.sh && chmod +x kexvim.sh
-./kexvim.sh
+curl -fsSL https://gitee.com/moscowzk/kexvim/raw/main/kexvim-install.sh -o kexvim-install.sh && chmod +x kexvim-install.sh
+./kexvim-install.sh
 ```
 
 安装完成后，终端输入 `kexvim` 即可使用。
