@@ -24,7 +24,7 @@ Kexvim 是一个运行在你本地设备上的 AI Agent 框架：既能像智能
 
 ### Windows
 
-下载 [kexvim.bat](https://gitee.com/moscowzk/kexvim/raw/main/kexvim.bat?download=1)，双击运行。
+下载 [kexvim-install.bat](https://gitee.com/moscowzk/kexvim/raw/main/kexvim-install.bat?download=1)，双击运行。
 
 首次运行自动：下载核心文件 → 安装依赖 → 引导配置 API Key。
 
