@@ -78,7 +78,7 @@ REM 4. First-run init (idempotent marker: data/.env, same as kexvim.js init)
 if not exist "%DIR%\data\.env" (
     echo.
     echo [~] kexvim not initialized yet. Running first-time setup...
-    echo [~] You will be prompted for your API key. Keep this window open.
+    echo [~] You will choose your LLM provider, pick a model, then enter your API key. Keep this window open.
     echo.
     REM 必须先 cd 到安装目录：kexvim.js init 按 cwd 回溯找项目根（data 定位规则），
     REM 不 cd 会解析到 bat 所在目录（如 D:\kexvim）→ 配置写错位置（2026-08-10 实锤 cwd 漂移）。

@@ -95,7 +95,7 @@ fi
 if [ ! -f "$DIR/data/.env" ]; then
     echo
     echo "[~] kexvim not initialized yet. Running first-time setup..."
-    echo "[~] You will be prompted for your API key. Keep this terminal open."
+    echo "[~] You will choose your LLM provider, pick a model, then enter your API key. Keep this terminal open."
     echo
     cd "$DIR" || exit 1
     "$NODEEXE" "$DIR/kexvim.js" init
