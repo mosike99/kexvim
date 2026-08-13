@@ -9,14 +9,6 @@
 
 ---
 
-## Screenshot 界面预览
-
-![Kexvim Web UI](assets/webui.png)
-
-*Web UI chat panel — 浏览器访问 `http://localhost:8788` 即可聊天*
-
----
-
 ## Features 特性
 
 - **Multi-platform access 多平台接入**: QQ bot, Web UI chat panel, terminal — run once, use everywhere / QQ 机器人、Web UI 聊天面板、终端交互，一处运行多端可用
