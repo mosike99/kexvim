@@ -6,6 +6,10 @@
 
 Kexvim 是一个运行在你本地设备上的 AI Agent 框架：既能像智能助手一样聊天问答，也能自动完成代码、文件、终端、搜索、定时任务等复杂工作。基于 Node.js/TypeScript 构建，单进程多线程架构，开箱即用。
 
+<p align="center">
+  <img src="assets/demo/black_themed_chat_page.png" alt="Kexvim Web UI 暗色主题" width="820">
+</p>
+
 ## 特性
 
 - **多平台接入**：QQ 机器人、Web UI 聊天面板、终端交互，一处运行多端可用
@@ -18,6 +22,12 @@ Kexvim 是一个运行在你本地设备上的 AI Agent 框架：既能像智能
 - **定时任务**：内置 cron 调度（shell 命令 / agent 自动执行两种模式）
 - **守护进程**：开机自启、崩溃自愈、`kexvim restart` 一键重启（主进程 + Web 一并重启）
 - **跨平台**：Windows / Linux / macOS
+
+## 界面预览
+
+| 会话树 | 技能市场 |
+|---|---|
+| <img src="assets/demo/sessions_tree.png" alt="会话树导航" width="400"> | <img src="assets/demo/skill_market_ch.png" alt="技能市场" width="400"> |
 
 ## 环境要求
 
@@ -83,6 +93,17 @@ curl -fsSL https://github.com/mosike99/kexvim/raw/main/kexvim-install.sh -o kexv
 - **事件驱动**：AgentRuntime 主循环 + 工具执行 + 消息推送解耦
 - **适配器模式**：平台适配层（QQ / Web / 终端）与 LLM Provider 抽象，扩展只需新增适配器
 - **技能/记忆**：技能库渐进披露，记忆分层持久化
+
+## 更多截图
+
+<details>
+<summary>任务执行、浅色主题等（点击展开）</summary>
+
+| 任务执行 | 浅色主题聊天页 |
+|---|---|
+| <img src="assets/demo/corn_task_ch.png" alt="任务执行" width="400"> | <img src="assets/demo/white_themed_chat_page.png" alt="Kexvim Web UI 浅色主题" width="400"> |
+
+</details>
 
 ## 开源协议
 

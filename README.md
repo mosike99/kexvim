@@ -6,6 +6,10 @@
 
 **Kexvim** is a local-first AI Agent framework: it chats like a smart assistant and autonomously handles coding, file operations, terminal commands, web search, scheduled tasks, and more. Built with Node.js/TypeScript — single-process, multi-threaded, ready to use out of the box.
 
+<p align="center">
+  <img src="assets/demo/black_themed_chat_page.png" alt="Kexvim Web UI — dark theme" width="820">
+</p>
+
 ## Features
 
 - **Multi-platform access**: QQ bot, Web UI chat panel, terminal — run once, use everywhere
@@ -18,6 +22,12 @@
 - **Scheduled tasks**: built-in cron scheduler (shell commands / autonomous agent runs)
 - **Daemon**: auto-start on boot, crash self-healing, one-command `kexvim restart` (main process + Web)
 - **Cross-platform**: Windows / Linux / macOS
+
+## Screenshots
+
+| Conversation Tree | Skill Market |
+|---|---|
+| <img src="assets/demo/sessions_tree.png" alt="Conversation tree navigation" width="400"> | <img src="assets/demo/skill_market_en.png" alt="Skill market" width="400"> |
 
 ## Requirements
 
@@ -83,6 +93,17 @@ Useful environment variables (each overrides the default):
 - **Event-driven**: AgentRuntime main loop + tool execution + message push decoupled
 - **Adapter pattern**: platform adapters (QQ / Web / terminal) and LLM provider abstraction — extend by adding adapters
 - **Skills / memory**: progressive-disclosure skill library, layered memory persistence
+
+## More Screenshots
+
+<details>
+<summary>Task execution, light theme and more (click to expand)</summary>
+
+| Task execution | Light theme chat page |
+|---|---|
+| <img src="assets/demo/corn_task_en.png" alt="Task execution" width="400"> | <img src="assets/demo/white_themed_chat_page.png" alt="Kexvim Web UI — light theme" width="400"> |
+
+</details>
 
 ## License
 
