@@ -6,13 +6,13 @@ kexvim 运行时规则——任何 AI agent 在 kexvim 环境中工作时必须�
 
 - **命令执行统一经 kexvim 的 CommandRunner 管控**（TerminalTool 内部实现：超时兜底防永久僵死、编码统一、windowsHide、进程树清理、错误结构化）——不存在绕过管控的裸命令执行；**危险命令会触发审批门**，如实等待审批结果并报告，不自行绕过
 - **有些命令不适合直接执行**（破坏性/系统级/生产环境操作）：先评估影响，必要时先问用户或拆解为安全步骤
-- `search_files` 使用**正则表达式**（ripgrep 引擎）。搜包含括号/引号/点号等特殊字符时，需要转义或使用 `.*` 模糊匹配。不确定时先用 `grep -F`（纯文本模式）验证
+- `search_files` 支持正则与字面双模式：pattern 含正则元字符（`. \ | ( [ { * + ? ^ $`）自动按正则匹配，否则按字面子串匹配。搜特殊字符（点号/括号/引号）需转义（如 `dev\.mjs`）；多关键词用 `|` alternation（如 `a|b`）；多扩展名 glob 用 `*.{ts,md}`。零结果时换模式或用 `audit_symbol`（literal 精确匹配）交叉验证
 - `write_file` / `patch` 执行后自动触发验证（`.ts` → `tsc --noEmit`，`.json` → `JSON.parse()`，`.yaml` → YAML 校验）；验证结果追加到同一 tool result，失败要修复
 - 不改 `package.json` 除非必要
 - **不提交**除非用户要求
-- 一次性脚本写到临时文件（如 `data/tmp/`），执行后删掉，不要嵌到 shell 命令里
+- 一次性脚本写到临时文件，执行后删掉，不要嵌到 bash 命令里
 - **脚本/工具写输出文件一律用 `data/tmp/` 绝对路径，禁止裸相对路径**——裸相对路径会落 cwd（当前工作目录），污染目录
-- **对外用户接口永远只有 `kexvim XXX`**（CLI 子命令）。`npm run xxx` 仅限内部构建/开发脚本
+- **对外用户接口永远只有 `kexvim XXX`**（CLI 子命令）。`npm run xxx` 仅限内部构建/开发脚本，禁止新增对外用户命令
 
 ## 跨平台
 
@@ -21,14 +21,14 @@ kexvim 运行时规则——任何 AI agent 在 kexvim 环境中工作时必须�
 | 进程管理 | 用 kexvim 的进程管理工具/命令，不直接调 `pgrep`/`kill` 裸命令 |
 | 路径 | 用 `os.homedir()` + `path.join`，不硬编码绝对路径 |
 | 定时任务 | 用 cronjob 工具（cron npm 包 + JSON 持久化），不用系统 crontab |
-| 自启/保活 | 用 `kexvim install/uninstall/status`，不自己搞 systemd/launchd/计划任务配置 |
-| CLI 命令 | 一律 `kexvim XXX` 子命令 |
+| 自启/保活 | 用 `kexvim install/uninstall/status`，不自己搞 systemd/launchd/计划任务配置——install 强制覆盖不一致，规则统一才不失控 |
+| CLI 命令 | 一律 `kexvim XXX` 子命令，禁止旁路脚本 |
 | 脚本 | 全平台用 Node.js / TypeScript（`.ts`），不用 shell/PowerShell |
 
 ## 技能库（Skills）
 
 - **禁止自动写/更新公共技能**（随 kexvim 发布的内置技能）；技能沉淀一律只进自有技能 `data/skills/`
-- 唯一例外：用户主动要求整理公共技能（如"放到公共技能"指令）
+- 唯一例外：用户主动要求整理公共技能（如"放到公共技能"指令，走 skill-promotion-to-public 流程）
 
 ## 验证
 
