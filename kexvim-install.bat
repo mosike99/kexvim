@@ -45,15 +45,6 @@ if not exist "%DIR%\package.json" (
     powershell -Command "iwr '%REPO%/raw/main/package.json' -OutFile '%DIR%\package.json'" >nul 2>nul
 )
 
-REM 2c. Install preinstalled marketplace skills (kexvim-market-skills default-skills.txt -> data\skills\market)
-if not exist "%DIR%\data\skills\market" (
-    echo [~] Installing preinstalled skills...
-    where git >nul 2>nul && (
-        mkdir "%DIR%\data\skills\market" 2>nul
-        powershell -NoProfile -Command "$tmp = Join-Path $env:TMP 'kexvim-market'; if (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force }; git clone --depth 1 'https://gitee.com/moscowzk/kexvim-market-skills.git' $tmp --single-branch 2>$null; if (Test-Path (Join-Path $tmp 'default-skills.txt')) { $list = Get-Content (Join-Path $tmp 'default-skills.txt') | Where-Object { $_ -and -not $_.StartsWith('#') }; foreach ($s in $list) { $src = Join-Path $tmp ('skills\' + $s); if (Test-Path $src) { Copy-Item $src (Join-Path '%DIR%\data\skills\market\' $s) -Recurse -Force } } }; Remove-Item $tmp -Recurse -Force"
-    )
-)
-
 REM 2d. Locate bundled portable node/npm (if downloaded); else fall back to system commands
 set "NODEEXE=%DIR%\node\node.exe"
 set "NPMCMD=%DIR%\node\npm.cmd"
