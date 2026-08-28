@@ -1,0 +1,232 @@
+# =====================================================================
+# Kexvim 参考配置（data-example）
+# 完整示例：所有内置 LLM provider + 平台适配器 + 压缩 / 会话重置 / Web 登录。
+# 复制到 data/config.yaml 并按需启用。API key 放 data/.env（不要写进 config）。
+# provider 字段：
+#   adapter     适配器类型：openai（OpenAI 兼容，默认）/ anthropic
+#   base_url    API 端点（不写用内置默认值）
+#   api_key_env 密钥对应的环境变量名（必填，key 放 data/.env）
+#   model       默认模型名
+#   models      可选模型列表（Web 设置面板下拉用）
+#   vision      true = 图片引用用该 provider 预分析（vision_analyze 工具）
+# 说明：本文件是「参考模板」，值全部为占位符；真实配置在 data/config.yaml（gitignore 不入库）。
+# =====================================================================
+
+language: zh-CN
+
+llm:
+  default_provider: deepseek
+  default_model: deepseek-chat
+  providers:
+    # ── 中转 / 聚合 ──────────────────────────────
+    scnet:                       # 超算互联网中转（OpenAI 兼容）https://api.scnet.cn
+      adapter: openai
+      base_url: https://api.scnet.cn/api/llm/v1
+      api_key_env: SCNET_API_KEY
+      model: DeepSeek-V4-Flash-0731
+      models:
+        - DeepSeek-V4-Flash
+        - DeepSeek-V4-Flash-0731
+        - DeepSeek-V4-Pro
+        - DeepSeek-V4-Pro-0813
+        - GLM-5.3
+        - GLM-5.2
+        - GLM-5.1
+        - GLM-5
+        - Kimi-K3
+        - Kimi-K2.7-Code
+        - Kimi-K2.6
+        - Kimi-K2.5
+        - MiniMax-M3
+        - MiniMax-M2.7
+        - MiniMax-M2.5
+        - Qwen3.8-Max
+
+    # ── 国内主流 ──────────────────────────────
+    deepseek:                    # https://platform.deepseek.com
+      api_key_env: DEEPSEEK_API_KEY
+      model: deepseek-chat
+    qwen:                        # 阿里云百炼（国内）https://dashscope.console.aliyun.com
+      api_key_env: DASHSCOPE_API_KEY
+      model: qwen-max
+    kimi:                        # 月之暗面（国内）https://platform.moonshot.cn
+      api_key_env: KIMI_API_KEY
+      model: kimi-k2
+    zai:                         # 智谱 GLM（Z.ai，支持视觉）https://api.z.ai
+      api_key_env: ZAI_API_KEY
+      base_url: https://open.bigmodel.cn/api/paas/v4
+      model: glm-5.2
+      vision: true               # 图片引用自动用该 provider 预分析
+    bigmodel:                    # 智谱 GLM（国内）https://open.bigmodel.cn
+      api_key_env: GLM_API_KEY
+      model: glm-5.2
+    minimax-cn:                  # MiniMax（国内）https://platform.minimaxi.com
+      api_key_env: MINIMAX_CN_API_KEY
+      model: MiniMax-Text-01
+    stepfun:                     # 阶跃星辰 https://platform.stepfun.com
+      api_key_env: STEPFUN_API_KEY
+      model: step-2-16k
+
+    # ── 国际主流 ──────────────────────────────
+    openai:                      # https://platform.openai.com
+      api_key_env: OPENAI_API_KEY
+      model: gpt-4o
+    anthropic:                   # https://console.anthropic.com（原生 Anthropic 协议）
+      adapter: anthropic
+      api_key_env: ANTHROPIC_API_KEY
+      model: claude-sonnet-4
+    gemini:                      # Google AI Studio（OpenAI 兼容端点）
+      api_key_env: GOOGLE_API_KEY
+      model: gemini-2.5-pro
+    alibaba:                     # 阿里云百炼（国际）https://dashscope-intl.aliyuncs.com
+      api_key_env: DASHSCOPE_API_KEY
+      model: qwen-max
+    openrouter:                  # 聚合路由 https://openrouter.ai
+      api_key_env: OPENROUTER_API_KEY
+      model: deepseek/deepseek-v4-flash
+    xai:                         # xAI Grok https://console.x.ai
+      api_key_env: XAI_API_KEY
+      model: grok-3
+    minimax:                     # MiniMax（国际）https://platform.minimax.io
+      api_key_env: MINIMAX_API_KEY
+      model: MiniMax-Text-01
+    deepinfra:                   # https://deepinfra.com
+      api_key_env: DEEPINFRA_API_KEY
+      model: meta-llama/Meta-Llama-3.1-70B-Instruct
+    novita:                      # https://novita.ai
+      api_key_env: NOVITA_API_KEY
+      model: deepseek/deepseek-v3
+    upstage:                     # Upstage Solar https://upstage.ai
+      api_key_env: UPSTAGE_API_KEY
+      model: solar-pro
+    nous:                        # Nous Research 官方
+      api_key_env: NOUS_API_KEY
+      model: hermes-4
+    groq:                        # https://console.groq.com
+      api_key_env: GROQ_API_KEY
+      model: llama-3.3-70b-versatile
+    together:                    # https://together.ai
+      api_key_env: TOGETHER_API_KEY
+      model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+    mistral:                     # https://console.mistral.ai
+      api_key_env: MISTRAL_API_KEY
+      model: mistral-large-latest
+    nvidia:                      # NVIDIA NIM https://build.nvidia.com
+      api_key_env: NVIDIA_API_KEY
+      model: meta/llama-3.1-405b-instruct
+    fireworks:                   # https://fireworks.ai
+      api_key_env: FIREWORKS_API_KEY
+      model: accounts/fireworks/models/llama-v3p1-70b-instruct
+    huggingface:                 # https://huggingface.co/settings/tokens
+      api_key_env: HF_TOKEN
+      model: meta-llama/Meta-Llama-3.1-70B-Instruct
+    cerebras:                    # https://cloud.cerebras.ai
+      api_key_env: CEREBRAS_API_KEY
+      model: llama-3.3-70b
+    xiaomi:                      # 小米 MiMo https://xiaomimimo.com
+      api_key_env: XIAOMI_API_KEY
+      model: MiMo-7B-RL
+    arcee:                       # https://arcee.ai
+      api_key_env: ARCEEAI_API_KEY
+      model: arcee-mini
+    gmi:                         # GMI Cloud https://gmi.cloud
+      api_key_env: GMI_API_KEY
+      model: deepseek/deepseek-v3
+
+    # ── 本地 / vendorOnly（必须显式 base_url + model 名）─────────
+    ollama:                      # 本地 Ollama http://localhost:11434
+      base_url: http://localhost:11434/v1
+      model: llama3.1
+
+# 可选：默认 provider 不可用时的回退链（顶层，非 llm 子段）
+fallback:
+  enabled: true
+  providers:
+    - name: deepseek
+      model: deepseek-chat
+    - name: zai
+      model: glm-5.2
+
+agent:
+  max_iterations: 90             # 单任务最大工具调用迭代
+  context_window: 256000         # 上下文窗口（token）
+  skill_nudge_interval: 10       # 技能提示间隔（轮）
+  memory_nudge_interval: 10      # 记忆提示间隔（轮）
+  background_review: true        # 后台回顾（空闲时主动复习会话）
+  # system_prompt: "你是一个乐于助人的助手"
+
+compression:                     # 上下文压缩（防超窗；阈值达到才触发）
+  thresholdPercent: 0.7          # 触发阈值（上下文窗口比例）
+  protectLastN: 20               # 保护尾部消息数（不压缩）
+  tailTokenBudget: 16000         # 压缩后尾部保留 token
+  maxSummaryTokens: 8000         # 摘要 token 上限
+  contextWindow: 256000          # 压缩计算用的窗口大小
+
+session_reset:                   # 会话自动重置
+  mode: both                     # daily | idle | both | none
+  at_hour: 4                     # daily/both：每天 4 点重置
+  idle_minutes: 1440             # idle/both：空闲 24h 重置
+  notify: true                   # 重置前通知
+
+paths:
+  # 数据目录：dev 版固定 = <项目根>/data（findProjectRoot 定位，无需配置）
+  # 仅当需要覆盖默认位置时才设置；KEXVIM_USER_DATA_DIR 环境变量优先
+  # user_data_dir: /absolute/path/to/data
+
+# =====================================================================
+# 平台适配器 — 按需启用，填了凭证的才会连接
+# 同时可开多个：QQ + Telegram + Web + HTTP API 互不干扰
+# =====================================================================
+platform:
+  enabled: true
+  adapters:
+    # ── QQ 官方机器人（QQ 开放平台）──────────────────────────
+    qq:
+      app_id: "XXX"
+      client_secret: "XXX"
+      # api_base: "https://api.sgroup.qq.com"   # 可选覆盖
+      # markdown_support: true                  # 启用 markdown 消息渲染
+
+    # ── HTTP API（curl / 第三方集成）─────────────────────────
+    api_server:
+      port: 8642
+      # api_key: "your-secret"                   # 可选鉴权
+
+    # ── WebSocket 双向传输（Web 前端 / 实时推送）────────────
+    ws:
+      port: 8643
+      # api_key: "your-secret"                   # 可选鉴权
+
+    # ── Telegram（@BotFather 拿 token）───────────────────────
+    telegram:
+      token: "123456:ABC-DEF"
+      # group_mention_only: true                 # 群聊仅响应 @bot
+
+    # ── Discord（开发者后台创建 Bot）────────────────────────
+    discord:
+      token: "bot-token"
+      # group_mention_only: true
+
+    # ── 微信 iLink 个人号（逆向协议，有封号风险）─────────────
+    weixin:
+      token: "ilink-token"
+      account_id: "your-account-id"
+      # group_mention_only: true
+
+    # ── 钉钉机器人（Stream 模式，应用 AppKey/AppSecret）─────
+    dingtalk:
+      client_id: "your-app-key"
+      client_secret: "your-app-secret"
+      # group_mention_only: true
+
+    # ── 飞书机器人（应用 App ID/Secret，需开长连接权限）──────
+    feishu:
+      app_id: "cli_xxx"
+      app_secret: "your-app-secret"
+      # group_mention_only: true
+
+# Web UI（登录鉴权）
+web:
+  username: admin                 # 本地登录账号（同时作为侧边栏展示名）
+  # password_hash: ""             # scrypt 哈希（scrypt$...）；留空 = 首次启动注册生成
+  # auth_server: https://auth.moscowzk.cloud   # 云端认证服务（可选，替代本地账密）
