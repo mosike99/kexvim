@@ -64,6 +64,12 @@ NPMCMD=npm
     mkdir -p "$DIR"
     curl -fsSL "$REPO/raw/main/package.json" -o "$DIR/package.json" || { echo "[X] package.json download failed"; exit 1; }
 }
+[ -f "$DIR/data-example/config.yaml" ] || {
+    echo "[~] Downloading data-example reference config..."
+    mkdir -p "$DIR/data-example"
+    curl -fsSL --create-dirs "$REPO/raw/main/data-example/config.yaml" -o "$DIR/data-example/config.yaml" || { echo "[X] data-example download failed"; exit 1; }
+    curl -fsSL "$REPO/raw/main/data-example/.env" -o "$DIR/data-example/.env" || { echo "[X] data-example download failed"; exit 1; }
+}
 
 # ---------- 3. 安装依赖（缺失时，kexvim.js 需要 cron/js-yaml/ws/MCP SDK） ----------
 if [ ! -d "$DIR/node_modules/cron" ]; then

@@ -45,6 +45,14 @@ if not exist "%DIR%\package.json" (
     powershell -Command "iwr '%REPO%/raw/main/package.json' -OutFile '%DIR%\package.json'" >nul 2>nul
 )
 
+REM 2c. Download data-example reference config if missing (config 全字段 + .env 模板，供填写参考)
+if not exist "%DIR%\data-example\config.yaml" (
+    echo [~] Downloading data-example reference config...
+    mkdir "%DIR%\data-example" 2>nul
+    powershell -Command "iwr '%REPO%/raw/main/data-example/config.yaml' -OutFile '%DIR%\data-example\config.yaml'" >nul 2>nul
+    powershell -Command "iwr '%REPO%/raw/main/data-example/.env' -OutFile '%DIR%\data-example\.env'" >nul 2>nul
+)
+
 REM 2d. Locate bundled portable node/npm (if downloaded); else fall back to system commands
 set "NODEEXE=%DIR%\node\node.exe"
 set "NPMCMD=%DIR%\node\npm.cmd"
