@@ -22,13 +22,14 @@ llm:
     scnet:                       # 超算互联网中转（OpenAI 兼容）https://api.scnet.cn
       adapter: openai
       base_url: https://api.scnet.cn/api/llm/v1
-      api_key_env: SCNET_API_KEY
+      api_key_env: SCNET_TP_API_KEY
       model: DeepSeek-V4-Flash-0731
       models:
         - DeepSeek-V4-Flash
         - DeepSeek-V4-Flash-0731
         - DeepSeek-V4-Pro
         - DeepSeek-V4-Pro-0813
+        - GLM-5.3-Flash
         - GLM-5.3
         - GLM-5.2
         - GLM-5.1
@@ -41,6 +42,7 @@ llm:
         - MiniMax-M2.7
         - MiniMax-M2.5
         - Qwen3.8-Max
+        - Qwen3.8-Flash
 
     # ── 国内主流 ──────────────────────────────
     deepseek:                    # https://platform.deepseek.com
