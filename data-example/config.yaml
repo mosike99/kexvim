@@ -9,6 +9,7 @@
 #   model       默认模型名
 #   models      可选模型列表（Web 设置面板下拉用）
 #   vision      true = 图片引用用该 provider 预分析（vision_analyze 工具）
+#   vision_model 可识图模型清单（字符串或数组；数组 = 同 provider 多个识图模型）
 # 说明：本文件是「参考模板」，值全部为占位符；真实配置在 data/config.yaml（gitignore 不入库）。
 # =====================================================================
 
@@ -16,7 +17,7 @@ language: zh-CN
 
 llm:
   default_provider: deepseek
-  default_model: deepseek-chat
+  default_model: deepseek-flash
   providers:
     # ── 中转 / 聚合 ──────────────────────────────
     scnet:                       # 超算互联网中转（OpenAI 兼容）https://api.scnet.cn
@@ -47,7 +48,7 @@ llm:
     # ── 国内主流 ──────────────────────────────
     deepseek:                    # https://platform.deepseek.com
       api_key_env: DEEPSEEK_API_KEY
-      model: deepseek-chat
+      model: deepseek-flash
     qwen:                        # 阿里云百炼（国内）https://dashscope.console.aliyun.com
       api_key_env: DASHSCOPE_API_KEY
       model: qwen-max
@@ -59,6 +60,8 @@ llm:
       base_url: https://open.bigmodel.cn/api/paas/v4
       model: glm-5.2
       vision: true               # 图片引用自动用该 provider 预分析
+      vision_model:              # 可识图模型清单（数组=多个；缺省用 model）
+        - glm-5.2
     bigmodel:                    # 智谱 GLM（国内）https://open.bigmodel.cn
       api_key_env: GLM_API_KEY
       model: glm-5.2
@@ -85,7 +88,7 @@ llm:
       model: qwen-max
     openrouter:                  # 聚合路由 https://openrouter.ai
       api_key_env: OPENROUTER_API_KEY
-      model: deepseek/deepseek-v4-flash
+      model: deepseek/deepseek-chat
     xai:                         # xAI Grok https://console.x.ai
       api_key_env: XAI_API_KEY
       model: grok-3
@@ -145,7 +148,7 @@ fallback:
   enabled: true
   providers:
     - name: deepseek
-      model: deepseek-chat
+      model: deepseek-flash
     - name: zai
       model: glm-5.2
 
